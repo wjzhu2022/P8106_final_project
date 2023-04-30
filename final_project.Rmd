@@ -1,0 +1,30 @@
+---
+title: "final_project"
+author: "wz2631"
+date: "2023-04-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(caret)
+library(FNN) 
+library(doBy) 
+library(tidyverse)
+```
+
+### Data preparation
+```{r}
+# draw 2 random samples of 2000 participants
+load("./recovery.Rdata")
+set.seed(2631) 
+dat1 <- dat[sample(1:10000, 2000),] %>% 
+  janitor::clean_names() %>% 
+  na.omit() %>%
+  dplyr::select(-id) 
+set.seed(2855) 
+dat2 <- dat[sample(1:10000, 2000),] %>% 
+  janitor::clean_names() %>% 
+  na.omit() %>%
+  dplyr::select(-id) 
+```
