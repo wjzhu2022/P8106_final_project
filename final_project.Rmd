@@ -1,6 +1,6 @@
 ---
 title: "final_project"
-author: "wz2631"
+author: "wz2631 rz2614 jn2855"
 date: "2023-04-30"
 output: pdf_document
 ---
@@ -14,6 +14,10 @@ library(dplyr)
 library(ggplot2)
 library(caret)
 library(pROC)
+library(partykit)
+library(randomForest)
+library(mlbench)
+library(ranger)
 library(ISLR)
 library(MASS)
 library(knitr)
@@ -46,8 +50,8 @@ dat <- rbind.fill(dat1, dat2) %>%
     vaccine=factor(vaccine),
     severity=factor(severity),
     study=factor(study),
-    recovery_bin = if_else(recovery_time <= 30, 'f', 's'), 
-    recovery_bin = factor(recovery_bin)
+    recovery_time = if_else(recovery_time <= 30, '1', '2'), 
+    recovery_time = factor(recovery_time)
   ) 
 ```
 
@@ -225,6 +229,51 @@ rpart_fit <- train(recovery_time ~., data = dat[train_index,],
                      trControl = ctrl1)
 rpart_fit$bestTune
 ggplot(rpart_fit,highlight = TRUE)
-rpart.plot::rpart.plot(rpart_fit$finalModel)
+
+test_pred_tree = predict(rpart_fit, newdata = dat[-train_index, ])
+rmse_tree = mean((test_pred_tree - dat$recovery_time[-train_index])**2)
+rmse_tree
 ```
-The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`
+The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`.
+
+```{r}
+#rf
+rf_grid=expand.grid(mtry = 1:16,
+                       splitrule = "variance",
+                       min.node.size = 1:6)
+set.seed(2023)
+rf_fit=train(recovery_time ~., 
+                data = dat[train_index,],
+                method = "ranger",
+                tuneGrid = rf_grid,
+                trControl = ctrl1)
+rf_fit$bestTune
+ggplot(rf_fit,highlight=TRUE)
+```
+
+
+
+```{r}
+set.seed(2023)
+rf_perm = ranger(recovery_time ~ . , 
+                 train_dat,
+                 mtry = rf_fit$bestTune[[1]], 
+                 splitrule = "variance",
+                 min.node.size = rf_fit$bestTune[[3]],
+                 importance = "permutation",
+                 scale.permutation.importance = TRUE)
+barplot(sort(importance(rf_perm), decreasing = FALSE), 
+        las = 2, horiz = TRUE, cex.names = 0.7,
+        col = colorRampPalette(colors = c("cyan","blue"))(19))
+rf_imp = ranger(recovery_time ~ . , 
+                train_dat,
+                mtry = rf_fit$bestTune[[1]], 
+                splitrule = "variance",
+                min.node.size = rf_fit$bestTune[[3]],
+                importance = "impurity") 
+barplot(sort(importance(rf_imp), decreasing = FALSE), 
+        las = 2, horiz = TRUE, cex.names = 0.7,
+        col = colorRampPalette(colors = c("cyan","blue"))(19))
+```
+
+
