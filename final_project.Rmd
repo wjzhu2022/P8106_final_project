@@ -2,13 +2,18 @@
 title: "final_project"
 author: "wz2631"
 date: "2023-04-30"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 library(plyr)
 library(caret)
 library(FNN) 
+library(ggplot2)
+library(caret)
+library(pROC)
+library(ISLR)
+library(party)
 library(doBy) 
 library(tidyverse)
 ```
@@ -20,13 +25,34 @@ load("./recovery.Rdata")
 set.seed(2631) 
 dat1 <- dat[sample(1:10000, 2000),] %>% 
   janitor::clean_names() %>% 
-  na.omit() %>%
-  dplyr::select(-id) 
+  na.omit() %>% 
+  select(-id)
 set.seed(2855) 
 dat2 <- dat[sample(1:10000, 2000),] %>% 
   janitor::clean_names() %>% 
-  na.omit() %>%
-  dplyr::select(-id) 
+  na.omit() %>% 
+  select(-id)
 dat <- rbind.fill(dat1, dat2) %>%
-  unique()
+  unique() %>% mutate( gender=fct_recode(factor(gender),male='1',female='0'),
+    race=fct_recode(factor(race),white='1',asian='2',black='3',hispanic='4'),
+    smoking=fct_recode(factor(smoking),never='0',former='1',current='2'),
+    hypertension=factor(hypertension),
+    diabetes=factor(diabetes),
+    vaccine=factor(vaccine),
+    severity=factor(severity),
+    study=factor(study),
+    recovery_bin = if_else(recovery_time <= 30, 'f', 's'), 
+    recovery_bin = factor(recovery_bin)
+  ) 
 ```
+
+```{r}
+set.seed(2023)
+train_index=createDataPartition(y = dat$recovery_time,
+                                p = 0.8,
+                                list = FALSE)
+college_train=dat[train_index,]
+college_test=dat[-train_index,]
+  
+```
+
