@@ -1,0 +1,278 @@
+---
+title: "final_project"
+author: "wz2631 rz2614 jn2855"
+date: "2023-04-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE, warning = FALSE)
+library(plyr)
+library(caret)
+library(FNN) 
+library(dplyr)
+library(ggplot2)
+library(caret)
+library(pROC)
+library(partykit)
+library(randomForest)
+library(mlbench)
+library(ranger)
+library(ISLR)
+library(MASS)
+library(knitr)
+library(earth)
+library(mgcv)
+library(party)
+library(doBy) 
+library(tidyverse)
+```
+
+### Data preparation
+```{r}
+# draw 2 random samples of 2000 participants
+load("./recovery.Rdata")
+set.seed(2631) 
+dat1 <- dat[sample(1:10000, 2000),] %>% 
+  janitor::clean_names() %>% 
+  na.omit()
+set.seed(2855) 
+dat2 <- dat[sample(1:10000, 2000),] %>% 
+  janitor::clean_names() %>% 
+  na.omit() 
+dat <- rbind.fill(dat1, dat2) %>%
+   dplyr::select(-id) %>% 
+  unique() %>% mutate( gender=fct_recode(factor(gender),male='1',female='0'),
+    race=fct_recode(factor(race),white='1',asian='2',black='3',hispanic='4'),
+    smoking=fct_recode(factor(smoking),never='0',former='1',current='2'),
+    hypertension=factor(hypertension),
+    diabetes=factor(diabetes),
+    vaccine=factor(vaccine),
+    severity=factor(severity),
+    study=factor(study)
+  ) 
+```
+
+```{r}
+#data partition
+set.seed(2023)
+train_index=createDataPartition(y = dat$recovery_time,
+                                p = 0.8,
+                                list = FALSE)
+train_dat=dat[train_index,]
+test_dat=dat[-train_index,]
+#training data
+train_data=dat[train_index,]
+x1 = model.matrix(recovery_time~., data=dat)[train_index,-1]
+y1=dat$recovery_time[train_index]
+#testing data
+test_data=dat[-train_index,]
+x2=model.matrix(recovery_time~., data=dat)[-train_index,-1]
+y2=dat$recovery_time[-train_index]  
+```
+
+```{r warning=FALSE}
+#exploratory analysis and data visualization
+visualization = train_dat %>% 
+  mutate(study=case_when(
+    study == "A" ~ 1,
+    study == "B" ~ 2,
+    study == "C" ~ 3
+  )) %>% 
+  dplyr::select(ldl,weight,bmi,sbp,age,height)
+non_numeric= sapply(visualization, function(x) !is.numeric(x))
+visualization[, non_numeric] = lapply(visualization[, non_numeric], as.numeric) 
+theme1 = trellis.par.get()
+theme1$plot.symbol$col = rgb(.2, .4, .2, .5)
+theme1$plot.symbol$pch=16
+theme1$plot.line$col=rgb(.8, .1, .1, 1)
+theme1$plot.line$lwd=2
+theme1$strip.background$col=rgb(.0, .2, .6, .2)
+trellis.par.set(theme1)
+
+featurePlot(x = visualization[ ,1:6],
+            y = visualization[ ,6],
+            plot = "scatter",
+            span = .5,
+            labels = c("Predictors", "Recovery Time"),
+            main = "Figure 1. the relationship between predictors and recovery time",
+            type = c("p", "smooth"))
+```
+
+```{r}
+par(mfrow=c(2,2)) 
+boxplot(recovery_time~study, data=dat, xlab="study", ylim=c(0,150))
+boxplot(recovery_time~gender, data=dat, xlab="gender", ylim=c(0,150))
+boxplot(recovery_time~hypertension, data=dat, xlab="hypertension", ylim=c(0,150))
+boxplot(recovery_time~diabetes, data=dat, xlab="diabetes", ylim=c(0,150))
+boxplot(recovery_time~vaccine, data=dat, xlab="vaccine", ylim=c(0,150))
+boxplot(recovery_time~severity, data=dat, xlab="severity", ylim=c(0,150))
+boxplot(recovery_time~race, data=dat, xlab="race", ylim=c(0,150))
+boxplot(recovery_time~smoking, data=dat, xlab="smoking", ylim=c(0,150))
+
+```
+
+```{r}
+#linear model
+set.seed(2023)
+ctrl=trainControl(method = "repeatedcv", number =10, repeats = 5)
+linear = train(recovery_time ~ age + gender + race + smoking + height + 
+                        weight + bmi + hypertension + diabetes + sbp + ldl + 
+                        vaccine + severity + study, 
+               data = train_dat, 
+               method = "lm", 
+               trControl = ctrl)
+summary(linear$finalModel)
+RMSE
+test_pred1=predict(linear,newdata = test_dat)
+rmse1=sqrt(mean((test_pred1-test_dat$recovery_time)**2))
+rmse1
+```
+
+```{r}
+#lasso
+set.seed(2023)
+ctrl=trainControl(method = "repeatedcv", number =10, repeats = 5)
+lasso=train(x1,y1, 
+            method = "glmnet",
+                   tuneGrid = expand.grid(alpha = 1,
+                                          lambda = exp(seq(-5, 5, length = 100))),
+                   trControl = ctrl)
+coef(lasso$finalModel, lasso$bestTune$lambda)
+lasso$bestTunetest_pred2=predict(lasso,newdata=x2)
+pred_lasso=predict(lasso, newx = x2, s = lasso$lambda.min)
+rmse_lasso= sqrt(mean((pred_lasso-y2)**2))
+rmse_lasso
+coef=coef(lasso, s = lasso$lambda.min)
+n.pred=sum(coef[-1] != 0)  
+n.pred
+plot(lasso)
+```
+
+
+```{r}
+#elastic net
+set.seed(2023)
+elastic_net=train(x1, y1,
+                  method = "glmnet",
+                  tuneGrid = expand.grid(alpha = seq(0, 1, length = 21), 
+                                         lambda = exp(seq(10, -10, length = 50))),
+                  trControl = ctrl)
+elastic_net$bestTune
+test_pred_elastic=predict(elastic_net, newdata = x2)
+rmse_elastic=sqrt(mean((test_pred_elastic - test_dat$recovery_time)**2))
+rmse_elastic
+plot(elastic_net)
+```
+
+
+
+
+
+```{r}
+#pls
+set.seed(2023)
+pls=train(x1, y1,
+          method = "pls",
+          tuneGrid = data.frame(ncomp = 1:15), # CHECK THIS
+          trControl = ctrl,
+          preProcess = c("center", "scale"))
+
+summary(pls$finalModel)
+test_pred_pls=predict(pls, newdata = x2)
+rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
+rmse_pls
+plot(pls)
+```
+
+```{r}
+#mars
+set.seed(2023)
+mars_grid = expand.grid(degree = 1:3, 
+                        nprune = 2:17) 
+mars = train(x1, y1,
+             method = "earth",
+             tuneGrid = mars_grid,
+             trControl = ctrl)
+kable(mars$bestTune,"simple")
+coef(mars$finalModel)
+test_pred_mars=predict(mars, newdata = x2)
+rmse_mars=sqrt(mean((test_pred_mars - test_dat$recovery_time)**2))
+rmse_mars
+summary(mars)
+plot(mars)
+```
+
+
+```{r}
+#gam 
+gam = train(x1, y1,
+                 method = "gam",
+                 trControl = ctrl,
+                 control = gam.control(maxit = 200))
+summary(gam$finalModel)
+gam$df.residual
+test_pred_gam=predict(gam, newdata = x2)
+rmse_gam=sqrt(mean((test_pred_gam-test_dat$recovery_time)**2))
+rmse_gam
+plot(gam)
+```
+
+```{r}
+#tree
+ctrl1=trainControl(method = "cv")
+set.seed(2023)
+rpart_fit <- train(recovery_time ~., data = dat[train_index,], 
+                     method = "rpart",
+                     tuneGrid = data.frame(cp = exp(seq(-6, -2, length = 50))),
+                     trControl = ctrl1)
+rpart_fit$bestTune
+ggplot(rpart_fit,highlight = TRUE)
+
+test_pred_tree = predict(rpart_fit, newdata = dat[-train_index, ])
+rmse_tree = mean((test_pred_tree - dat$recovery_time[-train_index])**2)
+rmse_tree
+```
+The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`.
+
+```{r}
+#rf
+rf_grid=expand.grid(mtry = 1:16,
+                       splitrule = "variance",
+                       min.node.size = 1:6)
+set.seed(2023)
+rf_fit=train(recovery_time ~., 
+                data = dat[train_index,],
+                method = "ranger",
+                tuneGrid = rf_grid,
+                trControl = ctrl1)
+rf_fit$bestTune
+ggplot(rf_fit,highlight=TRUE)
+```
+
+
+
+```{r}
+set.seed(2023)
+rf_perm = ranger(recovery_time ~ . , 
+                 train_dat,
+                 mtry = rf_fit$bestTune[[1]], 
+                 splitrule = "variance",
+                 min.node.size = rf_fit$bestTune[[3]],
+                 importance = "permutation",
+                 scale.permutation.importance = TRUE)
+barplot(sort(importance(rf_perm), decreasing = FALSE), 
+        las = 2, horiz = TRUE, cex.names = 0.7,
+        col = colorRampPalette(colors = c("cyan","blue"))(19))
+rf_imp = ranger(recovery_time ~ . , 
+                train_dat,
+                mtry = rf_fit$bestTune[[1]], 
+                splitrule = "variance",
+                min.node.size = rf_fit$bestTune[[3]],
+                importance = "impurity") 
+barplot(sort(importance(rf_imp), decreasing = FALSE), 
+        las = 2, horiz = TRUE, cex.names = 0.7,
+        col = colorRampPalette(colors = c("cyan","blue"))(19))
+```
+
+
