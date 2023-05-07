@@ -250,31 +250,6 @@ rf_fit$bestTune
 ggplot(rf_fit,highlight=TRUE)
 ```
 
-
-
-```{r}
-set.seed(2023)
-rf_perm = ranger(recovery_time ~ . , 
-                 train_dat,
-                 mtry = rf_fit$bestTune[[1]], 
-                 splitrule = "variance",
-                 min.node.size = rf_fit$bestTune[[3]],
-                 importance = "permutation",
-                 scale.permutation.importance = TRUE)
-barplot(sort(importance(rf_perm), decreasing = FALSE), 
-        las = 2, horiz = TRUE, cex.names = 0.7,
-        col = colorRampPalette(colors = c("cyan","blue"))(19))
-rf_imp = ranger(recovery_time ~ . , 
-                train_dat,
-                mtry = rf_fit$bestTune[[1]], 
-                splitrule = "variance",
-                min.node.size = rf_fit$bestTune[[3]],
-                importance = "impurity") 
-barplot(sort(importance(rf_imp), decreasing = FALSE), 
-        las = 2, horiz = TRUE, cex.names = 0.7,
-        col = colorRampPalette(colors = c("cyan","blue"))(19))
-```
-
 ```{r}
 #boosting
 library(parallel)
