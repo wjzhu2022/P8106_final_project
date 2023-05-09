@@ -9,16 +9,29 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Introduction
+## Introduction and Background
 The aim of this research is to develop a prediction model for recovery time from COVID-19 by merging three cohort studies that have been following participants for several years. Recovery information will be gathered through questionnaires and medical records, and personal characteristics data from before the pandemic will be utilized. The primary objective is to identify important risk factors for longer recovery time and gain a better understanding of the predictors of recovery time from COVID-19.
 
-## Data
-This study employs the recovery.RData file, which comprises a dataset of 10,000 participants. The dataset contains a variable for recovery time from COVID-19 (in days), which is the focus of this research, along with 14 predictor variables, including demographic features, personal characteristics, vital measurements, and disease status. The predictors consist of both continuous and categorical variables. The study used two random samples of 2000 participants each, obtained from UNI wz2631 and another UNI jn2855 midterm project dataset, to create the dataset. The two datasets were merged, duplicates were removed, and the resulting combined dataset was partitioned into training and test datasets, with the training dataset containing 80% of the sample and the test dataset containing the remaining 20%. The partitioning was performed using the createDataPartition() function in R, with a seed value of 2023 to ensure reproducibility.
+## Data and Exploratory Analysis
+This study employs the recovery.RData file, which comprises a dataset of 10,000 participants. The dataset contains a variable for recovery time from COVID-19 (in days) along with 14 predictor variables, including demographic features, personal characteristics, vital measurements, and disease status. The predictors consist of both continuous and categorical variables. The study used two merged random samples of 2000 participants each, obtained from UNI wz2631 and another UNI jn2855 midterm project dataset, to create the dataset. The training dataset contains 80% of the sample and, the test dataset contains the remaining 20%. 
 
-
-## Primary Analysis
 To investigate patterns or relationships and better understand the multivariate dataset, lattice plots were generated using the featurePlot() function in the caret package. A total of 5 plots were created, one for each predictor variable in the dataset, in order to visualize the association between each predictor and the outcome variable of COVID-19 recovery time.
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("graph2/eda1.png")
 ```
+\begin{center}
+Figure 1. the relationship between continous predictors(sbp, ldl, age, weight, height and bmi) and recovery time
+\end{center}
+Five lattice plots have been used to visualize the relationship between continuous predictors(sbp, ldl, age, weight, height and bmi) and recovery time. There is almost no relationship between sbp and recovery time, between age and recovery time, and between ldl and recovery time. There is a positive relationship between height and recovery time, and between weight and recovery time. There is a negative relationship between bmi and recovery time.
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("graph2/eda2.png")
+```
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("graph2/eda3.png")
+```
+\begin{center}
+Figure 2. the relationship between categorical predictors(study, hypertension, gender, diabetes, vaccine, race, and severity) and recovery time
+\end{center}
+Seven boxplots have been used to visualize the relationship between continuous predictors(study, hypertension, gender, diabetes, vaccine, race, and severity) and recovery time. There is no large difference in recovery time among patients in study A, study B and study C. Patients with hypertension have a slightly longer recovery time than patients without hypertension. Female patients have a slightly longer recovery time than male patients. There is almost no difference in recovery time between patients with diabetes and patients without diabetes. Vaccinated patients have a slightly shorter recovery time than unvaccinated patients. There is almost no difference in recovery time among white patients, Asian patients, black patients and hispanic patients. 
