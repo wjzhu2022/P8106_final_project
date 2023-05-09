@@ -120,8 +120,7 @@ boxplot(recovery_time~smoking, data = dat, xlab = "smoking", ylim = c(0,150))
 set.seed(2023)
 ctrl = trainControl(method = "repeatedcv", number = 10, repeats = 5)
 linear = train(recovery_time ~ age + gender + race + smoking + height + 
-                        weight + bmi + hypertension + diabetes + sbp + ldl + 
-                        vaccine + severity + study, 
+                        weight + bmi + hypertension + diabetes + sbp + ldl + vaccine + severity + study, 
                data = train_dat, 
                method = "lm", 
                trControl = ctrl)
