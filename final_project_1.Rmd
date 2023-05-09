@@ -172,14 +172,14 @@ ridge.rmse
 ```{r elastic net}
 #elastic net
 set.seed(2023)
-elastic_net=train(x1, y1,
+elastic_net = train(x1, y1,
                   method = "glmnet",
                   tuneGrid = expand.grid(alpha = seq(0, 1, length = 21), 
                                          lambda = exp(seq(10, -10, length = 50))),
                   trControl = ctrl)
 elastic_net$bestTune
-test_pred_elastic=predict(elastic_net, newdata = x2)
-rmse_elastic=sqrt(mean((test_pred_elastic - test_dat$recovery_time)**2))
+test_pred_elastic = predict(elastic_net, newdata = x2)
+rmse_elastic = sqrt(mean((test_pred_elastic - test_dat$recovery_time)**2))
 rmse_elastic
 plot(elastic_net)
 ```
