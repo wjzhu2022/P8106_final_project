@@ -1,9 +1,32 @@
 ---
-title: "report"
-author: "Ruihan Zhang"
-date: "2023-05-09"
-output: pdf_document
----
+title: "P8106 Final Project"
+subtitle: "P8160 Group Project 3 - Markov chain Monte Carlo"
+date: "May 10, 2023"
+author: "Wenjia Zhu, Ruihan Zhang, Jierou Niu"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 2
+  keep_tex: true
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '2'
+header-includes:
+- \usepackage{hyperref}
+- \hypersetup{colorlinks=false, linktoc=all, linkcolor=red}
+# - \AtBeginDocument{\addtocontents{toc}{\protect\hypertarget{mylink}{}\hspace{0.25in}\hspace{0.5in}\par}}
+- \usepackage{placeins}
+- \usepackage{caption}
+- \usepackage{fancyhdr}
+- \usepackage{lipsum}
+- \pagestyle{fancy}
+- \fancyhead[R]{\thepage}
+- \usepackage{amsmath}
+- \usepackage{algpseudocode}
+- \usepackage{algorithm}
+
+--- 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -58,3 +81,6 @@ Figure 2. the relationship between categorical predictors(study, hypertension, g
 Seven boxplots have been used to visualize the relationship between continuous predictors(study, hypertension, gender, diabetes, vaccine, race, and severity) and recovery time. There is no large difference in recovery time among patients in study A, study B and study C. Patients with hypertension have a slightly longer recovery time than patients without hypertension. Female patients have a slightly longer recovery time than male patients. There is almost no difference in recovery time between patients with diabetes and patients without diabetes. Vaccinated patients have a slightly shorter recovery time than unvaccinated patients. There is almost no difference in recovery time among white patients, Asian patients, black patients and hispanic patients. 
 
 ## Primary Analysis
+
+## Secondary Analysis
+
