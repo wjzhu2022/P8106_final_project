@@ -78,13 +78,13 @@ y2 = dat$recovery_time[-train_index]
 ```{r warning=FALSE}
 #exploratory analysis and data visualization
 visualization = train_dat %>% 
-  mutate(study=case_when(
+  mutate(study = case_when(
     study == "A" ~ 1,
     study == "B" ~ 2,
     study == "C" ~ 3
   )) %>% 
   dplyr::select(ldl,weight,bmi,sbp,age,height)
-non_numeric= sapply(visualization, function(x) !is.numeric(x))
+non_numeric = sapply(visualization, function(x) !is.numeric(x))
 visualization[, non_numeric] = lapply(visualization[, non_numeric], as.numeric) 
 theme1 = trellis.par.get()
 theme1$plot.symbol$col = rgb(.2, .4, .2, .5)
