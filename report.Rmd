@@ -89,7 +89,14 @@ Figure 2. the relationship between categorical predictors(study, hypertension, g
 \end{center}
 Seven boxplots have been used to visualize the relationship between continuous predictors(study, hypertension, gender, diabetes, vaccine, race, and severity) and recovery time. There is no large difference in recovery time among patients in study A, study B and study C. Patients with hypertension have a slightly longer recovery time than patients without hypertension. Female patients have a slightly longer recovery time than male patients. There is almost no difference in recovery time between patients with diabetes and patients without diabetes. Vaccinated patients have a slightly shorter recovery time than unvaccinated patients. There is almost no difference in recovery time among white patients, Asian patients, black patients and hispanic patients. 
 
+
+# Model Training
+Eleven models were used in this project, which are the linear model, LASSO model, PCR model, GAM model, MARS model, elastic net model, and PLS model.
+
+The linear model is a simple approach for supervised learning. It assumes that the dependence of outcome on predictors is linear, and that the errors have the constant variance and normal distribution. This linear model was fitted by train function with 10 folds cross validation for 5 times, which was done by the trainControl function. The method was linear regression. The model was summarized to get statistical details. The RMSE was calculated by using the predicted and actual value of recovery time.  
+
 # Primary Analysis
 
 # Secondary Analysis
 
+# Conclusion
