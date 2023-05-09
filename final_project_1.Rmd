@@ -151,6 +151,24 @@ n.pred
 plot(lasso)
 ```
 
+```{r ridge}
+set.seed(2631)
+
+ridge.fit = train(x1, y1,
+                 method = "glmnet",
+                 tuneGrid = expand.grid(alpha = 0,
+                                        lambda = exp(seq(-1, 6, length = 100))), 
+                 trControl = ctrl1)
+summary(ridge.fit$finalModel)
+plot(ridge.fit, xTrans = log)
+
+ridge.fit$bestTune$lambda
+coef(ridge.fit$finalModel, ridge.fit$bestTune$lambda)
+
+ridge.pred <- predict(ridge.fit, newdata = x2) 
+ridge.rmse <- sqrt(mean((ridge.pred - y2)^2))
+ridge.rmse
+```
 
 ```{r elastic net}
 #elastic net
@@ -305,7 +323,7 @@ test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 test_rmse_df
 resamp <- resamples(list(LM = linear,
-                         RIDGE = ridge.fit,
+                         RIDGE = ridge,
                          LASSO = lasso,
                          ENET = elastic_net,
                          boosting = gbm_fit,
