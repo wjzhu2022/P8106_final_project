@@ -185,19 +185,19 @@ rmse_pls
 plot(pls)
 ```
 
-```{r}
+```{r mars}
 #mars
 set.seed(2023)
 mars_grid = expand.grid(degree = 1:3, 
-                        nprune = 2:17) 
+                        nprune = 2:18) 
 mars = train(x1, y1,
              method = "earth",
              tuneGrid = mars_grid,
              trControl = ctrl)
 kable(mars$bestTune,"simple")
 coef(mars$finalModel)
-test_pred_mars=predict(mars, newdata = x2)
-rmse_mars=sqrt(mean((test_pred_mars - test_dat$recovery_time)**2))
+test_pred_mars = predict(mars, newdata = x2)
+rmse_mars = sqrt(mean((test_pred_mars - test_dat$recovery_time)**2))
 rmse_mars
 summary(mars)
 plot(mars)
