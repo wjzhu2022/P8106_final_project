@@ -128,6 +128,7 @@ linear = train(recovery_time ~ age + gender + race + smoking + height +
                method = "lm", 
                trControl = ctrl)
 summary(linear$finalModel)
+plot(linear)
 RMSE
 test_pred1=predict(linear,newdata = test_dat)
 rmse1=sqrt(mean((test_pred1-test_dat$recovery_time)**2))
@@ -283,6 +284,7 @@ radial_tune=tune.svm(recovery_time ~ .,
                         gamma = exp(seq(-6,-2,len = 20)))
 plot(radial_tune, transform.y = log, transform.x = log,
      color.palette = terrain.colors)
+
 
 best_radial=radial_tune$best.model
 summary(best_radial)
