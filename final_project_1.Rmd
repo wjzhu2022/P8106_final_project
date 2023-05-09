@@ -188,15 +188,15 @@ plot(elastic_net)
 ```{r pls}
 #pls
 set.seed(2023)
-pls=train(x1, y1,
+pls = train(x1, y1,
           method = "pls",
           tuneGrid = data.frame(ncomp = 1:20), 
           trControl = ctrl,
           preProcess = c("center", "scale"))
 
 summary(pls$finalModel)
-test_pred_pls=predict(pls, newdata = x2)
-rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
+test_pred_pls = predict(pls, newdata = x2)
+rmse_pls = sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
 rmse_pls
 plot(pls)
 ```
@@ -335,7 +335,7 @@ registerDoSEQ()
 ### Model comparison and selection
 ```{r}
 model <- c("LM","RIDGE","LASSO","ENET","PCR","PLS","GAM","MARS")
-test_rmse <- c(lm.rmse, ridge.rmse, lasso.rmse, enet.rmse, pcr.rmse, pls.rmse, gam.rmse, mars.rmse)
+test_rmse <- c(lm.rmse, ridge.rmse, lasso.rmse, enet.rmse, pcr.rmse, pls.rmse, rmse_gam, rmse_mars, rmse_tree)
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 test_rmse_df
