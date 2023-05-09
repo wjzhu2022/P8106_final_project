@@ -128,8 +128,8 @@ linear = train(recovery_time ~ age + gender + race + smoking + height +
                method = "lm", 
                trControl = ctrl)
 summary(linear$finalModel)
-plot(linear)
-RMSE
+par(mfrow=c(2,2)) 
+plot(linear$finalModel)
 test_pred1=predict(linear,newdata = test_dat)
 rmse1=sqrt(mean((test_pred1-test_dat$recovery_time)**2))
 rmse1
@@ -172,7 +172,22 @@ plot(elastic_net)
 ```
 
 
+```{r pcr}
+#pcr
+set.seed(2023)
 
+pcr.fit <- train(x1, y1,
+                 method = "pcr",
+                 tuneGrid = data.frame(ncomp = 1:19),
+                 trControl = ctrl,
+                 preProcess = c("center","scale"))
+summary(pcr.fit$finalModel)
+ggplot(pcr.fit, highlight = TRUE) + theme_bw()
+
+pcr.pred = predict(pcr.fit, newdata = x2)
+pcr.rmse = sqrt(mean((pcr.pred - y2)^2))
+pcr.rmse
+```
 
 
 ```{r}
@@ -208,7 +223,25 @@ rmse_mars
 summary(mars)
 plot(mars)
 ```
+```{r ridge}
+#ridge
+set.seed(2023)
 
+ridge.fit = train(x1, y1,
+                 method = "glmnet",
+                 tuneGrid = expand.grid(alpha = 0,
+                                        lambda = exp(seq(-1, 6, length = 100))), 
+                 trControl = ctrl)
+summary(ridge.fit$finalModel)
+plot(ridge.fit, xTrans = log)
+
+ridge.fit$bestTune$lambda
+coef(ridge.fit$finalModel, ridge.fit$bestTune$lambda)
+
+ridge.pred <- predict(ridge.fit, newdata = x2) 
+ridge.rmse <- sqrt(mean((ridge.pred - y2)^2))
+ridge.rmse
+```
 
 ```{r}
 #gam 
@@ -288,6 +321,7 @@ plot(radial_tune, transform.y = log, transform.x = log,
 
 best_radial=radial_tune$best.model
 summary(best_radial)
+
 stopCluster(cl)
 registerDoSEQ()
 ```
