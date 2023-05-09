@@ -151,6 +151,7 @@ plot(lasso)
 ```
 
 ```{r ridge}
+#ridge
 set.seed(2023)
 
 ridge.fit = train(x1, y1,
@@ -201,6 +202,7 @@ plot(pls)
 ```
 
 ```{r pcr}
+#pcr
 set.seed(2023)
 
 pcr.fit <- train(x1, y1,
