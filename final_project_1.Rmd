@@ -127,8 +127,8 @@ linear = train(recovery_time ~ age + gender + race + smoking + height +
 summary(linear$finalModel)
 RMSE
 test_pred1 = predict(linear,newdata = test_dat)
-rmse1 = sqrt(mean((test_pred1 - test_dat$recovery_time)**2))
-rmse1
+lm.rmse = sqrt(mean((test_pred1 - test_dat$recovery_time)**2))
+lm.rmse
 ```
 
 ```{r lasso}
@@ -142,8 +142,8 @@ lasso = train(x1,y1,
 coef(lasso$finalModel, lasso$bestTune$lambda)
 lasso$bestTunetest_pred2 = predict(lasso,newdata = x2)
 pred_lasso = predict(lasso, newx = x2, s = lasso$lambda.min)
-rmse_lasso = sqrt(mean((pred_lasso - y2)**2))
-rmse_lasso
+lasso.rmse = sqrt(mean((pred_lasso - y2)**2))
+lasso.rmse
 coef = coef(lasso, s = lasso$lambda.min)
 n.pred = sum(coef[-1] != 0)  
 n.pred
@@ -154,18 +154,18 @@ plot(lasso)
 #ridge
 set.seed(2023)
 
-ridge.fit = train(x1, y1,
+ridge = train(x1, y1,
                  method = "glmnet",
                  tuneGrid = expand.grid(alpha = 0,
                                         lambda = exp(seq(-1, 6, length = 100))), 
                  trControl = ctrl)
-summary(ridge.fit$finalModel)
-plot(ridge.fit, xTrans = log)
+summary(ridge$finalModel)
+plot(ridge, xTrans = log)
 
-ridge.fit$bestTune$lambda
-coef(ridge.fit$finalModel, ridge.fit$bestTune$lambda)
+ridge$bestTune$lambda
+coef(ridge$finalModel, ridge$bestTune$lambda)
 
-ridge.pred <- predict(ridge.fit, newdata = x2) 
+ridge.pred <- predict(ridge, newdata = x2) 
 ridge.rmse <- sqrt(mean((ridge.pred - y2)^2))
 ridge.rmse
 ```
@@ -180,23 +180,23 @@ elastic_net = train(x1, y1,
                   trControl = ctrl)
 elastic_net$bestTune
 test_pred_elastic = predict(elastic_net, newdata = x2)
-rmse_elastic = sqrt(mean((test_pred_elastic - test_dat$recovery_time)**2))
-rmse_elastic
+enet.rmse = sqrt(mean((test_pred_elastic - test_dat$recovery_time)**2))
+enet.rmse
 plot(elastic_net)
 ```
 
 ```{r pls}
 #pls
 set.seed(2023)
-pls=train(x1, y1,
+pls = train(x1, y1,
           method = "pls",
           tuneGrid = data.frame(ncomp = 1:20), 
           trControl = ctrl,
           preProcess = c("center", "scale"))
 
 summary(pls$finalModel)
-test_pred_pls=predict(pls, newdata = x2)
-rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
+test_pred_pls = predict(pls, newdata = x2)
+rmse_pls = sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
 rmse_pls
 plot(pls)
 ```
@@ -229,8 +229,8 @@ mars = train(x1, y1,
              trControl = ctrl)
 kable(mars$bestTune,"simple")
 coef(mars$finalModel)
-test_pred_mars=predict(mars, newdata = x2)
-rmse_mars=sqrt(mean((test_pred_mars - test_dat$recovery_time)**2))
+test_pred_mars = predict(mars, newdata = x2)
+rmse_mars = sqrt(mean((test_pred_mars - test_dat$recovery_time)**2))
 rmse_mars
 summary(mars)
 plot(mars)
@@ -323,11 +323,11 @@ radial_tune = tune.svm(recovery_time ~ .,
 plot(radial_tune, transform.y = log, transform.x = log,
      color.palette = terrain.colors)
 
-best_radial=radial_tune$best.model
+best_radial = radial_tune$best.model
 summary(best_radial)
-pred_gbm=predict(gbm_fit, newdata = test_dat)
-rmse_gbm=RMSE(pred_gbm,dat$recovery_time[-train_index])
-rmse_gbm
+svm.pred = predict(radial_tune, newdata = x2)
+svm.rmse = sqrt(mean((svm.pred - y2)^2))
+svm.rmse
 stopCluster(cl)
 registerDoSEQ()
 ```
@@ -335,7 +335,7 @@ registerDoSEQ()
 ### Model comparison and selection
 ```{r}
 model <- c("LM","RIDGE","LASSO","ENET","PCR","PLS","GAM","MARS")
-test_rmse <- c(lm.rmse, ridge.rmse, lasso.rmse, enet.rmse, pcr.rmse, pls.rmse, gam.rmse, mars.rmse)
+test_rmse <- c(lm.rmse, ridge.rmse, lasso.rmse, enet.rmse, pcr.rmse, rmse_pls, rmse_gam, rmse_mars, rmse_tree, rmse_rf, rmse_gbm, rmse_svm)
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 test_rmse_df
@@ -349,7 +349,7 @@ resamp <- resamples(list(LM = linear,
                          PLS = pls,
                          GAM = gam,
                          MARS = mars,
-                         SVM = cl))
+                         SVM = radial_tune))
 summary(resamp)
 bwplot(resamp, metric = "RMSE")
 ```
