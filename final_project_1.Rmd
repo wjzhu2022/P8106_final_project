@@ -60,19 +60,19 @@ dat <- rbind.fill(dat1, dat2) %>%
 ```{r}
 #data partition
 set.seed(2023)
-train_index=createDataPartition(y = dat$recovery_time,
+train_index = createDataPartition(y = dat$recovery_time,
                                 p = 0.8,
                                 list = FALSE)
-train_dat=dat[train_index,]
-test_dat=dat[-train_index,]
+train_dat = dat[train_index,]
+test_dat = dat[-train_index,]
 #training data
-train_data=dat[train_index,]
-x1 = model.matrix(recovery_time~., data=dat)[train_index,-1]
-y1=dat$recovery_time[train_index]
+train_data = dat[train_index,]
+x1 = model.matrix(recovery_time~., data = dat)[train_index,-1]
+y1 = dat$recovery_time[train_index]
 #testing data
-test_data=dat[-train_index,]
-x2=model.matrix(recovery_time~., data=dat)[-train_index,-1]
-y2=dat$recovery_time[-train_index]  
+test_data = dat[-train_index,]
+x2 = model.matrix(recovery_time~., data = dat)[-train_index,-1]
+y2 = dat$recovery_time[-train_index]  
 ```
 
 ```{r warning=FALSE}
