@@ -152,13 +152,13 @@ plot(lasso)
 ```
 
 ```{r ridge}
-set.seed(2631)
+set.seed(2023)
 
 ridge.fit = train(x1, y1,
                  method = "glmnet",
                  tuneGrid = expand.grid(alpha = 0,
                                         lambda = exp(seq(-1, 6, length = 100))), 
-                 trControl = ctrl1)
+                 trControl = ctrl)
 summary(ridge.fit$finalModel)
 plot(ridge.fit, xTrans = log)
 
@@ -199,6 +199,22 @@ test_pred_pls=predict(pls, newdata = x2)
 rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
 rmse_pls
 plot(pls)
+```
+
+```{r pcr}
+set.seed(2023)
+
+pcr.fit <- train(x1, y1,
+                 method = "pcr",
+                 tuneGrid = data.frame(ncomp = 1:19),
+                 trControl = ctrl,
+                 preProcess = c("center","scale"))
+summary(pcr.fit$finalModel)
+ggplot(pcr.fit, highlight = TRUE) + theme_bw()
+
+pcr.pred = predict(pcr.fit, newdata = x2)
+pcr.rmse = sqrt(mean((pcr.pred - y2)^2))
+pcr.rmse
 ```
 
 ```{r mars}
