@@ -46,14 +46,14 @@ dat2 <- dat[sample(1:10000, 2000),] %>%
   na.omit() 
 dat <- rbind.fill(dat1, dat2) %>%
    dplyr::select(-id) %>% 
-  unique() %>% mutate( gender=fct_recode(factor(gender),male='1',female='0'),
-    race=fct_recode(factor(race),white='1',asian='2',black='3',hispanic='4'),
-    smoking=fct_recode(factor(smoking),never='0',former='1',current='2'),
-    hypertension=factor(hypertension),
-    diabetes=factor(diabetes),
-    vaccine=factor(vaccine),
-    severity=factor(severity),
-    study=factor(study)
+  unique() %>% mutate( gender = fct_recode(factor(gender),male = '1',female = '0'),
+    race = fct_recode(factor(race),white = '1',asian = '2',black = '3',hispanic = '4'),
+    smoking = fct_recode(factor(smoking),never = '0',former = '1',current = '2'),
+    hypertension = factor(hypertension),
+    diabetes = factor(diabetes),
+    vaccine = factor(vaccine),
+    severity = factor(severity),
+    study = factor(study)
   ) 
 ```
 
