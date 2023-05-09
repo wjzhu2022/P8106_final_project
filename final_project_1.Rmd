@@ -134,18 +134,18 @@ rmse1
 ```{r lasso}
 #lasso
 set.seed(2023)
-lasso=train(x1,y1, 
+lasso = train(x1,y1, 
             method = "glmnet",
                    tuneGrid = expand.grid(alpha = 1,
                                           lambda = exp(seq(-5, 5, length = 100))),
                    trControl = ctrl)
 coef(lasso$finalModel, lasso$bestTune$lambda)
-lasso$bestTunetest_pred2=predict(lasso,newdata=x2)
-pred_lasso=predict(lasso, newx = x2, s = lasso$lambda.min)
-rmse_lasso= sqrt(mean((pred_lasso-y2)**2))
+lasso$bestTunetest_pred2 = predict(lasso,newdata = x2)
+pred_lasso = predict(lasso, newx = x2, s = lasso$lambda.min)
+rmse_lasso = sqrt(mean((pred_lasso - y2)**2))
 rmse_lasso
-coef=coef(lasso, s = lasso$lambda.min)
-n.pred=sum(coef[-1] != 0)  
+coef = coef(lasso, s = lasso$lambda.min)
+n.pred = sum(coef[-1] != 0)  
 n.pred
 plot(lasso)
 ```
