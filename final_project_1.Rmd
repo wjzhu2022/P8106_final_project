@@ -350,9 +350,9 @@ plot(radial_tune, transform.y = log, transform.x = log,
 
 best_radial = radial_tune$best.model
 summary(best_radial)
+pred.radial = predict(best_radial,newdata = dat[-train_index,])
+confusionMatrix(data = pred.radial,reference = dat$recovery_time[-train_index])
 
-pred.radial=predict(best_radial,newdata=dat[-train_index,])
-confusionMatrix(data = pred.radial,reference=dat$recovery_time[-train_index])
 stopCluster(cl)
 registerDoSEQ()
 ```
