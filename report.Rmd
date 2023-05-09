@@ -97,9 +97,11 @@ Seven boxplots have been used to visualize the relationship between continuous p
 
 
 # Model Training
-Eleven models were used in this project, which are the linear model, LASSO model,ridge model, PCR model, GAM model, MARS model, elastic net model, and PLS model.
+Eleven models were used in this project, which are the linear model, LASSO model, ridge model, PCR model, GAM model, MARS model, elastic net model, and PLS model.
 
-In supervised learning, a linear model assumes $Y=\beta_0+\beta_1X+\epsilon$, in which the $\epsilon$ follows a normal distribution with uniform variance. The train() function with 10-fold cross-validation was used to fit this linear model 5 times, as specified by the trainControl() function, using linear regression. Statistical information about the model was obtained by summarizing it. Additionally, the RMSE was computed by comparing predicted and actual recovery time values.
+In supervised learning, a linear model assumes $Y=\beta_0+\beta_1X+\epsilon$, in which the $\epsilon$ follows a normal distribution with uniform variance. The train() function with 10-fold cross-validation was used to fit this linear model 5 times, as specified by the trainControl() function, using linear regression. Statistical information about the model was obtained by summarizing it. 
+
+Additionally, the RMSE from each model was computed by comparing predicted and actual recovery time values.
 # Primary Analysis
 
 # Secondary Analysis
