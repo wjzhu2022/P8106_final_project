@@ -111,10 +111,9 @@ boxplot(recovery_time~vaccine, data=dat, xlab="vaccine", ylim=c(0,150))
 boxplot(recovery_time~severity, data=dat, xlab="severity", ylim=c(0,150))
 boxplot(recovery_time~race, data=dat, xlab="race", ylim=c(0,150))
 boxplot(recovery_time~smoking, data=dat, xlab="smoking", ylim=c(0,150))
-
 ```
 
-```{r}
+```{r lm}
 #linear model
 set.seed(2023)
 ctrl=trainControl(method = "repeatedcv", number =10, repeats = 5)
@@ -131,7 +130,7 @@ rmse1=sqrt(mean((test_pred1-test_dat$recovery_time)**2))
 rmse1
 ```
 
-```{r}
+```{r lasso}
 #lasso
 set.seed(2023)
 lasso=train(x1,y1, 
@@ -151,7 +150,7 @@ plot(lasso)
 ```
 
 
-```{r}
+```{r elastic net}
 #elastic net
 set.seed(2023)
 elastic_net=train(x1, y1,
@@ -166,7 +165,7 @@ rmse_elastic
 plot(elastic_net)
 ```
 
-```{r}
+```{r pls}
 #pls
 set.seed(2023)
 pls=train(x1, y1,
@@ -200,8 +199,7 @@ summary(mars)
 plot(mars)
 ```
 
-
-```{r}
+```{r gam}
 #gam 
 gam = train(x1, y1,
                  method = "gam",
@@ -215,7 +213,7 @@ rmse_gam
 plot(gam)
 ```
 
-```{r}
+```{r tree}
 #tree
 set.seed(2023)
 rpart_fit <- train(recovery_time ~., data = dat[train_index,], 
@@ -231,7 +229,7 @@ rmse_tree
 ```
 The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`.
 
-```{r}
+```{r rf}
 #rf
 rf_grid=expand.grid(mtry = 1:16,
                        splitrule = "variance",
@@ -249,7 +247,7 @@ rmse_rf = mean((test_pred_rf - dat$recovery_time[-train_index])**2)
 rmse_rf
 ```
 
-```{r}
+```{r boosting}
 #boosting
 library(parallel)
 # Calculate the number of cores
@@ -281,7 +279,7 @@ registerDoSEQ()
 ```
 
 
-```{r}
+```{r svm}
 #svm
 library(parallel)
 # Calculate the number of cores
@@ -306,7 +304,7 @@ stopCluster(cl)
 registerDoSEQ()
 ```
 
-```{r}
+```{r model comparison}
 #model comparison
 set.seed(2023)
 res=resamples(list(lm = linear,lasso = lasso, elastic_net = elastic_net,pls = pls,gam=gam,mars = mars,boosting=gbm_fit,rf=rf_fit))
