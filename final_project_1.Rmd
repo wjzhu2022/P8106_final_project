@@ -76,20 +76,20 @@ y2=dat$recovery_time[-train_index]
 ```{r warning=FALSE}
 #exploratory analysis and data visualization
 visualization = train_dat %>% 
-  mutate(study = case_when(
+  mutate(study=case_when(
     study == "A" ~ 1,
     study == "B" ~ 2,
     study == "C" ~ 3
   )) %>% 
   dplyr::select(ldl,weight,bmi,sbp,age,height)
-non_numeric = sapply(visualization, function(x) !is.numeric(x))
+non_numeric= sapply(visualization, function(x) !is.numeric(x))
 visualization[, non_numeric] = lapply(visualization[, non_numeric], as.numeric) 
 theme1 = trellis.par.get()
-theme1$plot.symbol$col = rgb(.1, .4, .7, .2)
-theme1$plot.symbol$pch = 1 
-theme1$plot.line$col = rgb(.0, 1, .0, 1)
-theme1$plot.line$lwd = 2
-theme1$strip.background$col = rgb(.0, .2, .6, .2)
+theme1$plot.symbol$col = rgb(.2, .4, .2, .5)
+theme1$plot.symbol$pch=16
+theme1$plot.line$col=rgb(.8, .1, .1, 1)
+theme1$plot.line$lwd=2
+theme1$strip.background$col=rgb(.0, .2, .6, .2)
 trellis.par.set(theme1)
 
 featurePlot(x = visualization[ ,1:6],
@@ -102,21 +102,22 @@ featurePlot(x = visualization[ ,1:6],
 ```
 
 ```{r}
-par(mfrow = c(2,2)) 
-boxplot(recovery_time~study, data = dat, xlab = "study", ylim = c(0,150))
-boxplot(recovery_time~gender, data = dat, xlab = "gender", ylim = c(0,150))
-boxplot(recovery_time~hypertension, data = dat, xlab = "hypertension", ylim = c(0,150))
-boxplot(recovery_time~diabetes, data = dat, xlab = "diabetes", ylim = c(0,150))
-boxplot(recovery_time~vaccine, data = dat, xlab = "vaccine", ylim = c(0,150))
-boxplot(recovery_time~severity, data = dat, xlab = "severity", ylim = c(0,150))
-boxplot(recovery_time~race, data = dat, xlab = "race", ylim = c(0,150))
-boxplot(recovery_time~smoking, data = dat, xlab = "smoking", ylim = c(0,150))
+par(mfrow=c(2,2)) 
+boxplot(recovery_time~study, data=dat, xlab="study", ylim=c(0,150))
+boxplot(recovery_time~gender, data=dat, xlab="gender", ylim=c(0,150))
+boxplot(recovery_time~hypertension, data=dat, xlab="hypertension", ylim=c(0,150))
+boxplot(recovery_time~diabetes, data=dat, xlab="diabetes", ylim=c(0,150))
+boxplot(recovery_time~vaccine, data=dat, xlab="vaccine", ylim=c(0,150))
+boxplot(recovery_time~severity, data=dat, xlab="severity", ylim=c(0,150))
+boxplot(recovery_time~race, data=dat, xlab="race", ylim=c(0,150))
+boxplot(recovery_time~smoking, data=dat, xlab="smoking", ylim=c(0,150))
+
 ```
 
-```{r lm}
+```{r}
 #linear model
 set.seed(2023)
-ctrl = trainControl(method = "repeatedcv", number = 10, repeats = 5)
+ctrl=trainControl(method = "repeatedcv", number =10, repeats = 5)
 linear = train(recovery_time ~ age + gender + race + smoking + height + 
                         weight + bmi + hypertension + diabetes + sbp + ldl + 
                         vaccine + severity + study, 
@@ -125,42 +126,42 @@ linear = train(recovery_time ~ age + gender + race + smoking + height +
                trControl = ctrl)
 summary(linear$finalModel)
 RMSE
-test_pred1 = predict(linear,newdata = test_dat)
-rmse1 = sqrt(mean((test_pred1 - test_dat$recovery_time)**2))
+test_pred1=predict(linear,newdata = test_dat)
+rmse1=sqrt(mean((test_pred1-test_dat$recovery_time)**2))
 rmse1
 ```
 
-```{r lasso}
+```{r}
 #lasso
 set.seed(2023)
-lasso = train(x1,y1, 
+lasso=train(x1,y1, 
             method = "glmnet",
                    tuneGrid = expand.grid(alpha = 1,
                                           lambda = exp(seq(-5, 5, length = 100))),
                    trControl = ctrl)
 coef(lasso$finalModel, lasso$bestTune$lambda)
-lasso$bestTunetest_pred2 = predict(lasso,newdata = x2)
-pred_lasso = predict(lasso, newx = x2, s = lasso$lambda.min)
-rmse_lasso =  sqrt(mean((pred_lasso - y2)**2))
+lasso$bestTunetest_pred2=predict(lasso,newdata=x2)
+pred_lasso=predict(lasso, newx = x2, s = lasso$lambda.min)
+rmse_lasso= sqrt(mean((pred_lasso-y2)**2))
 rmse_lasso
-coef = coef(lasso, s = lasso$lambda.min)
-n.pred = sum(coef[-1] != 0)  
+coef=coef(lasso, s = lasso$lambda.min)
+n.pred=sum(coef[-1] != 0)  
 n.pred
 plot(lasso)
 ```
 
 
-```{r elastic net}
+```{r}
 #elastic net
 set.seed(2023)
-elastic_net = train(x1, y1,
+elastic_net=train(x1, y1,
                   method = "glmnet",
                   tuneGrid = expand.grid(alpha = seq(0, 1, length = 21), 
                                          lambda = exp(seq(10, -10, length = 50))),
                   trControl = ctrl)
 elastic_net$bestTune
-test_pred_elastic = predict(elastic_net, newdata = x2)
-rmse_elastic = sqrt(mean((test_pred_elastic - test_dat$recovery_time)**2))
+test_pred_elastic=predict(elastic_net, newdata = x2)
+rmse_elastic=sqrt(mean((test_pred_elastic - test_dat$recovery_time)**2))
 rmse_elastic
 plot(elastic_net)
 ```
@@ -169,42 +170,42 @@ plot(elastic_net)
 
 
 
-```{r pls}
+```{r}
 #pls
 set.seed(2023)
-pls = train(x1, y1,
+pls=train(x1, y1,
           method = "pls",
-          tuneGrid = data.frame(ncomp = 1:19), # CHECK THIS
+          tuneGrid = data.frame(ncomp = 1:20), 
           trControl = ctrl,
           preProcess = c("center", "scale"))
 
 summary(pls$finalModel)
-test_pred_pls = predict(pls, newdata = x2)
-rmse_pls = sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
+test_pred_pls=predict(pls, newdata = x2)
+rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
 rmse_pls
 plot(pls)
 ```
 
-```{r mars}
+```{r}
 #mars
 set.seed(2023)
 mars_grid = expand.grid(degree = 1:3, 
-                        nprune = 2:18) 
+                        nprune = 2:17) 
 mars = train(x1, y1,
              method = "earth",
              tuneGrid = mars_grid,
              trControl = ctrl)
 kable(mars$bestTune,"simple")
 coef(mars$finalModel)
-test_pred_mars = predict(mars, newdata = x2)
-rmse_mars = sqrt(mean((test_pred_mars - test_dat$recovery_time)**2))
+test_pred_mars=predict(mars, newdata = x2)
+rmse_mars=sqrt(mean((test_pred_mars - test_dat$recovery_time)**2))
 rmse_mars
 summary(mars)
 plot(mars)
 ```
 
 
-```{r gam}
+```{r}
 #gam 
 gam = train(x1, y1,
                  method = "gam",
@@ -212,8 +213,8 @@ gam = train(x1, y1,
                  control = gam.control(maxit = 200))
 summary(gam$finalModel)
 gam$df.residual
-test_pred_gam = predict(gam, newdata = x2)
-rmse_gam = sqrt(mean((test_pred_gam - test_dat$recovery_time)**2))
+test_pred_gam=predict(gam, newdata = x2)
+rmse_gam=sqrt(mean((test_pred_gam-test_dat$recovery_time)**2))
 rmse_gam
 plot(gam)
 ```
@@ -247,6 +248,9 @@ rf_fit=train(recovery_time ~.,
                 trControl = ctrl)
 rf_fit$bestTune
 ggplot(rf_fit,highlight=TRUE)
+test_pred_rf = predict(rf_fit, newdata = dat[-train_index, ])
+rmse_rf = mean((test_pred_rf - dat$recovery_time[-train_index])**2)
+rmse_rf
 ```
 
 ```{r}
