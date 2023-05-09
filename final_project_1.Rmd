@@ -88,10 +88,10 @@ non_numeric= sapply(visualization, function(x) !is.numeric(x))
 visualization[, non_numeric] = lapply(visualization[, non_numeric], as.numeric) 
 theme1 = trellis.par.get()
 theme1$plot.symbol$col = rgb(.2, .4, .2, .5)
-theme1$plot.symbol$pch=16
-theme1$plot.line$col=rgb(.8, .1, .1, 1)
-theme1$plot.line$lwd=2
-theme1$strip.background$col=rgb(.0, .2, .6, .2)
+theme1$plot.symbol$pch = 16
+theme1$plot.line$col = rgb(.8, .1, .1, 1)
+theme1$plot.line$lwd = 2
+theme1$strip.background$col = rgb(.0, .2, .6, .2)
 trellis.par.set(theme1)
 
 featurePlot(x = visualization[ ,1:6],
@@ -104,10 +104,10 @@ featurePlot(x = visualization[ ,1:6],
 ```
 
 ```{r}
-par(mfrow=c(2,2)) 
-boxplot(recovery_time~study, data=dat, xlab="study", ylim=c(0,150))
-boxplot(recovery_time~gender, data=dat, xlab="gender", ylim=c(0,150))
-boxplot(recovery_time~hypertension, data=dat, xlab="hypertension", ylim=c(0,150))
+par(mfrow = c(2,2)) 
+boxplot(recovery_time~study, data = dat, xlab = "study", ylim = c(0,150))
+boxplot(recovery_time~gender, data = dat, xlab = "gender", ylim = c(0,150))
+boxplot(recovery_time~hypertension, data = dat, xlab = "hypertension", ylim = c(0,150))
 boxplot(recovery_time~diabetes, data=dat, xlab="diabetes", ylim=c(0,150))
 boxplot(recovery_time~vaccine, data=dat, xlab="vaccine", ylim=c(0,150))
 boxplot(recovery_time~severity, data=dat, xlab="severity", ylim=c(0,150))
