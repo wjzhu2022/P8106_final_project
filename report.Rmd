@@ -7,6 +7,28 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(plyr)
+library(caret)
+library(FNN) 
+library(dplyr)
+library(kernlab)
+library(factoextra)
+library(e1071)
+library(ggplot2)
+library(caret)
+library(pROC)
+library(partykit)
+library(randomForest)
+library(mlbench)
+library(ranger)
+library(ISLR)
+library(MASS)
+library(knitr)
+library(earth)
+library(mgcv)
+library(party)
+library(doBy) 
+library(tidyverse)
 ```
 
 ## Introduction and Background
