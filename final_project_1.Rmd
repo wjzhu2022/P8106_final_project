@@ -343,12 +343,13 @@ resamp <- resamples(list(LM = linear,
                          RIDGE = ridge,
                          LASSO = lasso,
                          ENET = elastic_net,
-                         boosting = gbm_fit,
-                         rf = rf_fit,
                          PCR = pcr.fit,
                          PLS = pls,
                          GAM = gam,
                          MARS = mars,
+                         TREE = rpart_fit,
+                         RF = rf_fit,
+                         BOOSTING = gbm_fit,
                          SVM = radial_tune))
 summary(resamp)
 bwplot(resamp, metric = "RMSE")
