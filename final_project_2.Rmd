@@ -242,6 +242,14 @@ The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`.
 
 ```{r}
 #rf
+library(parallel)
+# Calculate the number of cores
+num_cores <- detectCores() 
+library(doParallel)
+# create the cluster for caret to use
+# CPU usage may go up to 100%
+cl <- makePSOCKcluster(num_cores)
+registerDoParallel(cl)
 rf_grid=expand.grid(mtry = 1:16,
                        splitrule = "variance",
                        min.node.size = 1:6)
@@ -253,6 +261,8 @@ rf_fit=train(recovery_time ~.,
                 trControl = ctrl)
 rf_fit$bestTune
 ggplot(rf_fit,highlight=TRUE)
+stopCluster(cl)
+registerDoSEQ()
 ```
 
 ```{r}
