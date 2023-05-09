@@ -323,11 +323,11 @@ radial_tune = tune.svm(recovery_time ~ .,
 plot(radial_tune, transform.y = log, transform.x = log,
      color.palette = terrain.colors)
 
-best_radial=radial_tune$best.model
+best_radial = radial_tune$best.model
 summary(best_radial)
-pred_gbm=predict(gbm_fit, newdata = test_dat)
-rmse_gbm=RMSE(pred_gbm,dat$recovery_time[-train_index])
-rmse_gbm
+svm.pred = predict(radial_tune, newdata = x2)
+svm.rmse = sqrt(mean((svm.pred - y2)^2))
+svm.rmse
 stopCluster(cl)
 registerDoSEQ()
 ```
@@ -335,7 +335,7 @@ registerDoSEQ()
 ### Model comparison and selection
 ```{r}
 model <- c("LM","RIDGE","LASSO","ENET","PCR","PLS","GAM","MARS")
-test_rmse <- c(lm.rmse, ridge.rmse, lasso.rmse, enet.rmse, pcr.rmse, pls.rmse, rmse_gam, rmse_mars, rmse_tree)
+test_rmse <- c(lm.rmse, ridge.rmse, lasso.rmse, enet.rmse, pcr.rmse, rmse_pls, rmse_gam, rmse_mars, rmse_tree, rmse_rf, rmse_gbm, rmse_svm)
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 test_rmse_df
@@ -349,7 +349,7 @@ resamp <- resamples(list(LM = linear,
                          PLS = pls,
                          GAM = gam,
                          MARS = mars,
-                         SVM = cl))
+                         SVM = radial_tune))
 summary(resamp)
 bwplot(resamp, metric = "RMSE")
 ```
