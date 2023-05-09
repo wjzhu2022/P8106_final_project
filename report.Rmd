@@ -1,6 +1,5 @@
 ---
 title: "P8106 Final Project"
-subtitle: "P8160 Group Project 3 - Markov chain Monte Carlo"
 date: "May 10, 2023"
 author: "Wenjia Zhu, Ruihan Zhang, Jierou Niu"
 output:
@@ -27,6 +26,15 @@ header-includes:
 - \usepackage{algorithm}
 
 --- 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      results = 'asis', 
+                      fig.align = "center")
+```
+
+\newpage
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
