@@ -118,7 +118,7 @@ boxplot(recovery_time~smoking, data = dat, xlab = "smoking", ylim = c(0,150))
 ```{r lm}
 #linear model
 set.seed(2023)
-ctrl=trainControl(method = "repeatedcv", number =10, repeats = 5)
+ctrl = trainControl(method = "repeatedcv", number = 10, repeats = 5)
 linear = train(recovery_time ~ age + gender + race + smoking + height + 
                         weight + bmi + hypertension + diabetes + sbp + ldl + 
                         vaccine + severity + study, 
@@ -127,8 +127,8 @@ linear = train(recovery_time ~ age + gender + race + smoking + height +
                trControl = ctrl)
 summary(linear$finalModel)
 RMSE
-test_pred1=predict(linear,newdata = test_dat)
-rmse1=sqrt(mean((test_pred1-test_dat$recovery_time)**2))
+test_pred1 = predict(linear,newdata = test_dat)
+rmse1 = sqrt(mean((test_pred1-test_dat$recovery_time)**2))
 rmse1
 ```
 
