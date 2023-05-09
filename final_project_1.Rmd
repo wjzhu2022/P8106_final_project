@@ -295,7 +295,6 @@ rmse_gbm=RMSE(pred_gbm,dat$recovery_time[-train_index])
 rmse_gbm
 stopCluster(cl)
 registerDoSEQ()
-
 ```
 
 ### Model comparison and selection
