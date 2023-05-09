@@ -244,8 +244,8 @@ gam = train(x1, y1,
                  control = gam.control(maxit = 200))
 summary(gam$finalModel)
 gam$df.residual
-test_pred_gam=predict(gam, newdata = x2)
-rmse_gam=sqrt(mean((test_pred_gam-test_dat$recovery_time)**2))
+test_pred_gam = predict(gam, newdata = x2)
+rmse_gam = sqrt(mean((test_pred_gam - test_dat$recovery_time)**2))
 rmse_gam
 plot(gam)
 ```
@@ -268,17 +268,17 @@ The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`.
 
 ```{r rf}
 #rf
-rf_grid=expand.grid(mtry = 1:16,
+rf_grid = expand.grid(mtry = 1:16,
                        splitrule = "variance",
                        min.node.size = 1:6)
 set.seed(2023)
-rf_fit=train(recovery_time ~., 
+rf_fit = train(recovery_time ~., 
                 data = dat[train_index,],
                 method = "ranger",
                 tuneGrid = rf_grid,
                 trControl = ctrl)
 rf_fit$bestTune
-ggplot(rf_fit,highlight=TRUE)
+ggplot(rf_fit,highlight = TRUE)
 test_pred_rf = predict(rf_fit, newdata = dat[-train_index, ])
 rmse_rf = mean((test_pred_rf - dat$recovery_time[-train_index])**2)
 rmse_rf
@@ -302,8 +302,8 @@ gbm_fit = train(recovery_time ~ . ,
 gbm_fit$bestTune
 
 summary(gbm_fit$finalModel, las = 2, cBars = 19, cex.names = 0.6)
-pred_gbm=predict(gbm_fit, newdata = test_dat)
-rmse_gbm=RMSE(pred_gbm,dat$recovery_time[-train_index])
+pred_gbm = predict(gbm_fit, newdata = test_dat)
+rmse_gbm = RMSE(pred_gbm,dat$recovery_time[-train_index])
 rmse_gbm
 stopCluster(cl)
 registerDoSEQ()
@@ -343,12 +343,13 @@ resamp <- resamples(list(LM = linear,
                          RIDGE = ridge,
                          LASSO = lasso,
                          ENET = elastic_net,
-                         boosting = gbm_fit,
-                         rf = rf_fit,
                          PCR = pcr.fit,
                          PLS = pls,
                          GAM = gam,
                          MARS = mars,
+                         TREE = rpart_fit,
+                         RF = rf_fit,
+                         BOOSTING = gbm_fit,
                          SVM = radial_tune))
 summary(resamp)
 bwplot(resamp, metric = "RMSE")
