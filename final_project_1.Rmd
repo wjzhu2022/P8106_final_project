@@ -204,7 +204,7 @@ plot(mars)
 ```
 
 
-```{r}
+```{r gam}
 #gam 
 gam = train(x1, y1,
                  method = "gam",
@@ -212,8 +212,8 @@ gam = train(x1, y1,
                  control = gam.control(maxit = 200))
 summary(gam$finalModel)
 gam$df.residual
-test_pred_gam=predict(gam, newdata = x2)
-rmse_gam=sqrt(mean((test_pred_gam-test_dat$recovery_time)**2))
+test_pred_gam = predict(gam, newdata = x2)
+rmse_gam = sqrt(mean((test_pred_gam - test_dat$recovery_time)**2))
 rmse_gam
 plot(gam)
 ```
