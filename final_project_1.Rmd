@@ -26,6 +26,8 @@ library(mgcv)
 library(party)
 library(doBy) 
 library(tidyverse)
+library(parallel)
+library(doParallel)
 ```
 
 
@@ -249,12 +251,6 @@ rmse_rf
 
 ```{r boosting}
 #boosting
-library(parallel)
-# Calculate the number of cores
-num_cores <- detectCores() 
-library(doParallel)
-# create the cluster for caret to use
-# CPU usage may go up to 100%
 cl <- makePSOCKcluster(num_cores)
 registerDoParallel(cl)
 set.seed(2023)
@@ -281,16 +277,10 @@ registerDoSEQ()
 
 ```{r svm}
 #svm
-library(parallel)
-# Calculate the number of cores
-num_cores <- detectCores() 
-library(doParallel)
-# create the cluster for caret to use
-# CPU usage may go up to 100%
 cl <- makePSOCKcluster(num_cores)
 registerDoParallel(cl)
 set.seed(2023)
-radial_tune=tune.svm(recovery_time ~ .,
+radial_tune = tune.svm(recovery_time ~ .,
                         data = dat[train_index,],
                         kernel = "radial",
                         cost = exp(seq(-1,4,len = 20)),
@@ -300,14 +290,40 @@ plot(radial_tune, transform.y = log, transform.x = log,
 
 best_radial=radial_tune$best.model
 summary(best_radial)
+pred_gbm=predict(gbm_fit, newdata = test_dat)
+rmse_gbm=RMSE(pred_gbm,dat$recovery_time[-train_index])
+rmse_gbm
 stopCluster(cl)
 registerDoSEQ()
+
+```
+
+### Model comparison and selection
+```{r}
+model <- c("LM","RIDGE","LASSO","ENET","PCR","PLS","GAM","MARS")
+test_rmse <- c(lm.rmse, ridge.rmse, lasso.rmse, enet.rmse, pcr.rmse, pls.rmse, gam.rmse, mars.rmse)
+test_rmse_df <- cbind(model, test_rmse)
+test_rmse_df <- as.data.frame(test_rmse_df)
+test_rmse_df
+resamp <- resamples(list(LM = linear,
+                         RIDGE = ridge.fit,
+                         LASSO = lasso,
+                         ENET = elastic_net,
+                         boosting = gbm_fit,
+                         rf = rf_fit,
+                         PCR = pcr.fit,
+                         PLS = pls,
+                         GAM = gam,
+                         MARS = mars,
+                         SVM = cl))
+summary(resamp)
+bwplot(resamp, metric = "RMSE")
 ```
 
 ```{r model comparison}
 #model comparison
 set.seed(2023)
-res=resamples(list(lm = linear,lasso = lasso, elastic_net = elastic_net,pls = pls,gam=gam,mars = mars,boosting=gbm_fit,rf=rf_fit))
+res=resamples(list(boosting=gbm_fit,rf=rf_fit))
 summary(res)
 ```
 
