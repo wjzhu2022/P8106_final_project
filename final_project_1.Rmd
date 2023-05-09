@@ -190,15 +190,15 @@ plot(elastic_net)
 ```{r pls}
 #pls
 set.seed(2023)
-pls = train(x1, y1,
+pls=train(x1, y1,
           method = "pls",
           tuneGrid = data.frame(ncomp = 1:20), 
           trControl = ctrl,
           preProcess = c("center", "scale"))
 
 summary(pls$finalModel)
-test_pred_pls = predict(pls, newdata = x2)
-rmse_pls = sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
+test_pred_pls=predict(pls, newdata = x2)
+rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
 rmse_pls
 plot(pls)
 ```
@@ -254,6 +254,14 @@ plot(gam)
 
 ```{r tree}
 #tree
+library(parallel)
+# Calculate the number of cores
+num_cores <- detectCores() 
+library(doParallel)
+# create the cluster for caret to use
+# CPU usage may go up to 100%
+cl <- makePSOCKcluster(num_cores)
+registerDoParallel(cl)
 set.seed(2023)
 rpart_fit <- train(recovery_time ~., data = dat[train_index,], 
                      method = "rpart",
@@ -265,11 +273,21 @@ ggplot(rpart_fit,highlight = TRUE)
 test_pred_tree = predict(rpart_fit, newdata = dat[-train_index, ])
 rmse_tree = mean((test_pred_tree - dat$recovery_time[-train_index])**2)
 rmse_tree
+stopCluster(cl)
+registerDoSEQ()
 ```
 The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`.
 
 ```{r rf}
 #rf
+library(parallel)
+# Calculate the number of cores
+num_cores <- detectCores() 
+library(doParallel)
+# create the cluster for caret to use
+# CPU usage may go up to 100%
+cl <- makePSOCKcluster(num_cores)
+registerDoParallel(cl)
 rf_grid = expand.grid(mtry = 1:16,
                        splitrule = "variance",
                        min.node.size = 1:6)
@@ -284,10 +302,15 @@ ggplot(rf_fit,highlight = TRUE)
 test_pred_rf = predict(rf_fit, newdata = dat[-train_index, ])
 rmse_rf = mean((test_pred_rf - dat$recovery_time[-train_index])**2)
 rmse_rf
+stopCluster(cl)
+registerDoSEQ()
 ```
 
 ```{r boosting}
 #boosting
+
+num_cores <- detectCores() 
+
 cl <- makePSOCKcluster(num_cores)
 registerDoParallel(cl)
 set.seed(2023)
@@ -327,9 +350,9 @@ plot(radial_tune, transform.y = log, transform.x = log,
 
 best_radial = radial_tune$best.model
 summary(best_radial)
-svm.pred = predict(radial_tune, newdata = x2)
-svm.rmse = sqrt(mean((svm.pred - y2)^2))
-svm.rmse
+
+pred.radial=predict(best_radial,newdata=dat[-train_index,])
+confusionMatrix(data = pred.radial,reference=dat$recovery_time[-train_index])
 stopCluster(cl)
 registerDoSEQ()
 ```
