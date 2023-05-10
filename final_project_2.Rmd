@@ -155,6 +155,25 @@ n.pred
 plot(lasso)
 ```
 
+```{r ridge}
+#ridge
+set.seed(2023)
+
+ridge = train(x1, y1,
+                 method = "glmnet",
+                 tuneGrid = expand.grid(alpha = 0,
+                                        lambda = exp(seq(-1, 6, length = 100))), 
+                 trControl = ctrl)
+summary(ridge$finalModel)
+plot(ridge, xTrans = log)
+
+ridge$bestTune$lambda
+coef(ridge$finalModel, ridge$bestTune$lambda)
+
+ridge.pred <- predict(ridge, newdata = x2) 
+ridge.rmse <- sqrt(mean((ridge.pred - y2)^2))
+ridge.rmse
+```
 
 ```{r}
 #elastic net
