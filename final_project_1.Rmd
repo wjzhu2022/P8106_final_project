@@ -425,8 +425,8 @@ bwplot(resamp, metric = "RMSE")
 
 
 ```{r}
-model <- c("LM","RIDGE","LASSO","ENET","PCR","PLS","GAM","MARS","TREE","RF","BOOSTING","SVM")
-test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, pls.rmse, rmse_gam, rmse_mars, rmse_tree, rmse_rf, rmse_gbm,test_error_svm)
+model <- c("LM","RIDGE","LASSO","ENET","PCR","GAM","MARS","TREE","RF","BOOSTING","SVM")
+test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, rmse_gam, rmse_mars, rmse_tree, rmse_rf, rmse_gbm,test_error_svm)
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 test_rmse_df

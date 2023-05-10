@@ -1,7 +1,7 @@
 ---
 title: "P8106 Final Project"
 date: "May 10, 2023"
-author: "Wenjia Zhu, Ruihan Zhang, Jierou Niu"
+author: "Wenjia Zhu, Ruihan Zhang, Jasmine Niu"
 output:
   pdf_document:
     toc: yes
@@ -80,7 +80,7 @@ knitr::include_graphics("./first.png")
 knitr::include_graphics("graph2/eda1.png")
 ```
 \begin{center}
-Figure 1. the relationship between continous predictors(sbp, ldl, age, weight, height and bmi) and recovery time
+Figure 1. the relationship between continuous predictors(sbp, ldl, age, weight, height and bmi) and recovery time
 \end{center}
 Five lattice plots have been used to visualize the relationship between continuous predictors(sbp, ldl, age, weight, height and bmi) and recovery time. There is almost no relationship between sbp and recovery time, between age and recovery time, and between ldl and recovery time. There is a positive relationship between height and recovery time, and between weight and recovery time. There is a negative relationship between bmi and recovery time.
 
@@ -93,11 +93,11 @@ knitr::include_graphics("graph2/eda3.png")
 \begin{center}
 Figure 2. the relationship between categorical predictors(study, hypertension, gender, diabetes, vaccine, race, and severity) and recovery time
 \end{center}
-Seven boxplots have been used to visualize the relationship between continuous predictors(study, hypertension, gender, diabetes, vaccine, race, and severity) and recovery time. There is no large difference in recovery time among patients in study A, study B and study C. Patients with hypertension have a slightly longer recovery time than patients without hypertension. Female patients have a slightly longer recovery time than male patients. There is almost no difference in recovery time between patients with diabetes and patients without diabetes. Vaccinated patients have a slightly shorter recovery time than unvaccinated patients. There is almost no difference in recovery time among white patients, Asian patients, black patients and hispanic patients. 
+Seven boxplots have been used to visualize the relationship between continuous predictors(study, hypertension, gender, diabetes, vaccine, race, and severity) and recovery time. There is no large difference in recovery time among patients in study A, study B and study C. Patients with hypertension have a slightly longer recovery time than patients without hypertension. Female patients have a slightly longer recovery time than male patients. There is almost no difference in recovery time between patients with diabetes and patients without diabetes. Vaccinated patients have a slightly shorter recovery time than unvaccinated patients. There is almost no difference in recovery time among white patients, Asian patients, black patients and Hispanic patients. 
 
 
 # Model Training
-Eleven models were used in this project, which are the linear model, LASSO model, ridge model, PCR model, GAM model, MARS model, elastic net model, and PLS model.
+Eleven models were used in this project as follows:
 
 **A linear model** assumes $Y=\beta_0+\beta_1X+\epsilon$, where $\epsilon\sim N(0,\sigma^2).$ The train() function with 10-fold cross-validation was used to fit this linear model 5 times, as specified by the trainControl() function, using linear regression. Statistical information about the model was obtained by summarizing it. 
 
@@ -106,9 +106,6 @@ Eleven models were used in this project, which are the linear model, LASSO model
 **The Lasso model** assumes that the dependence of the outcome on predictors is linear and that the errors have a constant variance and normal distribution. It also assumes that the predictors are not highly correlated with each other. One key aspect of the Lasso model is its use of the L1 penalty, which shrinks some of the coefficient estimates $\hat\beta^R_\lambda$ to minimize $RSS+\lambda\sum_i^p|\beta_i|$ towards zero and can effectively perform variable selection by setting some coefficients exactly to zero. To fit this Lasso model, the train() function was used with 10 folds cross validation, repeated 5 times. The method used was glmnet within the train function. The tuning parameters were set using the tuneGrid argument with a range from $\exp\{-1\}$ to $\exp\{5\}$ and a length of 100. The Lasso model was specified by setting the alpha parameter to 1. To obtain all possible combinations of lambda and alpha, the expand.grid() function was utilized.
 
 **Elastic Net** is a linear regression model that combines the penalties of Lasso and Ridge regression to overcome some of their limitations. It minimizes $\sum_i^n(y_i-\beta_0-\sum_i^n\beta_jx_{ij})^2+\lambda_1\sum_i^p\beta_j^2+\lambda_2|\beta_j|$. It assumes that the dependence of the outcome on predictors is linear and that the errors have a constant variance and normal distribution. Elastic Net also assumes that there is no multicollinearity among predictors. Additionally, it assumes that the data is standardized before fitting the model, so that all predictors have the same scale. This model was trained using the train function with 10-fold cross-validation for 5 iterations, utilizing the trainControl() function. The method employed was glmnet within the train function. The tuning parameters for this model included 21 values for the alpha parameter ranging from 0 to 1, and 50 values for the lambda parameter ranging from $\exp\{-10\}$ to $\exp\{10\}$. The expand.grid() function was utilized to generate all possible combinations of lambda and alpha for tuning the model.
-
-
-**PLS (Partial Least Squares)** assumes that there is a linear relationship between the predictor variables and the response variable, and that there may be multicollinearity among the predictor variables. PLS also assumes that the number of predictor variables is larger than the number of observations in the dataset. The PLS model was trained using the train function with 10-fold cross-validation for 5 iterations, controlled by trainControl. The pls method was used within the train() function. The tuneGrid argument used a data frame with one column, ncomp, which ranged from 1 to 20. The training data were centered and scaled using the preProcess argument with "center" and "scale" options, respectively.
 
 **PCR (Principal Component Regression)** assumes that the predictors are linearly related to the outcome variable, and that there is no multicollinearity among the predictors. PCR also assumes that the first few principal components capture most of the variability in the predictors and that the remaining principal components do not contain any significant information. The pcr method was used within the train() function. The tuneGrid argument used a data frame with one column, ncomp, which ranged from 1 to 19. The training data were centered and scaled using the preProcess argument with "center" and "scale" options, respectively.
 
@@ -125,8 +122,51 @@ Eleven models were used in this project, which are the linear model, LASSO model
 **The SVM (Support Vector Machine)** assumes that the data is linearly separable, meaning that there exists a hyperplane that can perfectly separate the two classes in the data. SVM also assumes that the data is normalized, and that the margin around the separating hyperplane is maximized. Additionally, SVM assumes that the selected kernel function is appropriate for the data and the problem at hand. Finally, SVM assumes that there are no outliers in the data that can greatly affect the separation of the classes. In the model,the kernel argument was set to "radial". The tune.svm() function was used to perform the tuning. A range of values ranged between $\exp\{-1\}$ and $\exp\{4\}$ for cost, and ranged between $\exp\{-6\}$ and $\exp\{-2\}$ for gamma.
 
 Additionally, the RMSE of each model was computed by comparing predicted and actual recovery time values.
-# Primary Analysis
 
-# Secondary Analysis
+# Results
+
+## Primary Analysis
+
+Among all the eleven models, according to Figure 3, Boosting, MARS and Bagging (Random Forest) have smaller RMSE than other models. 
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/resample_plot.png")
+```
+\begin{center}
+Figure 3. Distribution of RMSE of the eleven models 
+\end{center}
+
+On the other hand, we predicted the outcome with the test data by the eleven models. According to Table 1, we found that Boosting, MARS and GAM have the greatest performance of predicting the values of outcome.
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/test_rmse.png")
+```
+\begin{center}
+Table 1. RMSE of the eleven models for prediction 
+\end{center}
+
+Therefore, we selected Boosting as the best model to predict time to recovery.
+
+## Secondary Analysis
+
+For classification, we considered time to recovery as a binary outcome (>30 days vs. <= 30 days) and aim to develop a prediction model for this binary outcome. According to Figure 4, the Boosting model has the smallest RMSE, so we selected it as the best model to predict the binary value of time to recovery.
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/resample.png")
+```
+\begin{center}
+Figure 4. Distribution of RMSE of the eleven models 
+\end{center}
+
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/test_rmse.png")
+```
+\begin{center}
+Table 2. RMSE of the eleven models for prediction 
+\end{center}
+
 
 # Conclusion
+
+To identify important risk factors for longer recovery time and gain a better understanding of the predictors of recovery time from COVID-19, we developed prediction models with a variety of techniques. Among them, the Boosting model shows the greatest performance on predicting time to recovery from COVID-19. 
