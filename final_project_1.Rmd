@@ -42,6 +42,7 @@ library(RColorBrewer)
 library(kernlab)
 library(factoextra)
 library(e1071)
+library(vip)
 ```
 
 
@@ -415,4 +416,19 @@ test_rmse_df <- as.data.frame(test_rmse_df)
 test_rmse_df
 ```
 
+```{r}
+# Variable selection
+vip(
+  gbm_fit,
+  method = "permute",
+  train = train_dat,
+  target = "recovery_time",
+  metric = "RMSE",
+  nsim = 10,
+  pred_wrapper = predict,
+  geom = "boxplot",
+  all_permutations = TRUE,
+  mapping = aes_string(fill = "Variable")
+)
+```
 

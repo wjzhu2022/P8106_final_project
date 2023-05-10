@@ -126,46 +126,42 @@ Additionally, the RMSE of each model was computed by comparing predicted and act
 
 # Results
 
-## Primary Analysis
+For primary analysis (regression), we aimed to develop a prediction model for time to recovery as a continuous outcome variable. On the other hand, for secondary analysis (classification), we considered time to recovery as a binary outcome (>30 days vs. <= 30 days) and aimed to develop a prediction model for this binary outcome. The 11 models were compared both for regression and classification, and model comparison was done with the same 5-fold cross-validation dataset. 
 
-Among all the eleven models, according to Figure 3 and Table 1, the boosted tree model have the smallest mean and median RMSE, so it was the final model selected with the best performance in the primary analysis. Thus,  the final model to predict the recovery time from COVID-19 was the boosted tree model.
+According to Figure 3, the boosted tree model has the smallest mean and median RMSE or prediction error rate. Thus, it was the final model selected with the best performance in the primary analysis. In addition, we compared the predicted values and the true values from the test dataset to evaluate the performance of the final model. Shown in Table 1, the RMSE of the boosted tree model for prediction is 18.99, which indicates that the predicted time to recovery will differ the true value by 18.99 days on average. Furthermore, we identified the variables with the largest overall impact in the final model using the Variable Importance Plot (VIP, shown in Figure 4). Bmi is the most important predictor, followed by study. 
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("primary_analysis_plot/resample_plot.png")
 ```
 \begin{center}
-Figure 3. the Distribution of RMSE of the eleven models 
+Figure 3. the Distribution of RMSE of the eleven models (regression)
 \end{center}
-
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("primary_analysis_plot/test_rmse.png")
 ```
 \begin{center}
-Table 1. RMSE of the eleven models for prediction 
+Table 1. RMSE of the eleven models for prediction (regression)
 \end{center}
 
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/variable_selection.png")
+```
+\begin{center}
+Figure 4. the Variable Importance Plot (regression)
+\end{center}
 
-## Secondary Analysis
+As for classification, shown in Figure 5, the boosted tree model has the smallest mean and median RMSE, so we selected it as the best model, same as regression, to predict the binary value of time to recovery from COVID-19. And to estimate the performance of the final model, we plotted the ROC curve, shown in Figure 6. The prediction Accuracy for classification is xxxx%, which means that the correct predictions will consist of xxxx% of all predictions on average. And the most important variable in the final model for classification is …….
 
-For classification, we considered time to recovery as a binary outcome (>30 days vs. <= 30 days) and aimed to develop a prediction model for this binary outcome. According to Figure 4, the boosted tree model has the smallest mean and median RMSE, so we selected it as the best model to predict the binary value of time to recovery.
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("secondary_analysis_plot/resample.png")
 ```
 \begin{center}
-Figure 4. Distribution of RMSE of the eleven models 
-\end{center}
-
-
-```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
-knitr::include_graphics("primary_analysis_plot/test_rmse.png")
-```
-\begin{center}
-Table 2. RMSE of the eleven models for prediction 
+Figure 5. Distribution of RMSE of the eleven models (classification)
 \end{center}
 
 
 # Conclusion
 
-To identify important risk factors for longer recovery time and gain a better understanding of the predictors of recovery time from COVID-19, we developed prediction models with a variety of techniques. Among them, the Boosting model shows the greatest performance on predicting time to recovery from COVID-19. 
+To identify important risk factors for longer recovery time and gain a better understanding of the predictors of recovery time from COVID-19, we developed prediction models with a variety of techniques. Among them, the boosted tree model shows the greatest performance on predicting time to recovery from COVID-19. 
