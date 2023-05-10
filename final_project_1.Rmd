@@ -201,22 +201,6 @@ enet.rmse
 plot(elastic_net)
 ```
 
-```{r pls}
-#pls
-set.seed(2023)
-pls.fit <- train(x1, y1,
-                 method = "pls",
-                 tuneGrid = data.frame(ncomp = 1:19),
-                 trControl = ctrl,
-                 preProcess = c("center","scale"))
-summary(pls.fit$finalModel)
-ggplot(pls.fit, highlight = TRUE) + theme_bw()
-
-pls.pred = predict(pls.fit, newdata = x2)
-pls.rmse = sqrt(mean((pls.pred - y2)^2))
-pls.rmse
-```
-
 ```{r pcr}
 #pcr
 set.seed(2023)
@@ -303,10 +287,9 @@ rpart_fit$bestTune
 ggplot(rpart_fit,highlight = TRUE)
 
 test_pred_tree = predict(rpart_fit, newdata = dat[-train_index, ])
-rmse_tree = mean((test_pred_tree - dat$recovery_time[-train_index])**2)
+rmse_tree = sqrt(mean((test_pred_tree - dat$recovery_time[-train_index])**2))
 rmse_tree
 rpart.plot::rpart.plot(rpart_fit$finalModel)
-
 stopCluster(cl)
 registerDoSEQ()
 ```
@@ -334,7 +317,7 @@ rf_fit = train(recovery_time ~.,
 rf_fit$bestTune
 ggplot(rf_fit,highlight = TRUE)
 test_pred_rf = predict(rf_fit, newdata = dat[-train_index, ])
-rmse_rf = mean((test_pred_rf - dat$recovery_time[-train_index])**2)
+rmse_rf = sqrt(mean((test_pred_rf - dat$recovery_time[-train_index])**2))
 rmse_rf
 stopCluster(cl)
 registerDoSEQ()
