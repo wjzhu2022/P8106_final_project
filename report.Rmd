@@ -127,7 +127,7 @@ Additionally, the RMSE of each model was computed by comparing predicted and act
 
 ## Primary Analysis
 
-Among all the eleven models, according to Figure 3 and Table 1, the boosting model have the smallest mean and median RMSE, so it was the final model selected with the best performance in the primary analysis. Thus,  the final model to predict the recovery time from COVID-19 was the GAM model.
+Among all the eleven models, according to Figure 3 and Table 1, the boosted tree model have the smallest mean and median RMSE, so it was the final model selected with the best performance in the primary analysis. Thus,  the final model to predict the recovery time from COVID-19 was the boosted tree model.
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("primary_analysis_plot/resample_plot.png")
@@ -147,7 +147,7 @@ Table 1. RMSE of the eleven models for prediction
 
 ## Secondary Analysis
 
-For classification, we considered time to recovery as a binary outcome (>30 days vs. <= 30 days) and aim to develop a prediction model for this binary outcome. According to Figure 4, the Boosting model has the smallest RMSE, so we selected it as the best model to predict the binary value of time to recovery.
+For classification, we considered time to recovery as a binary outcome (>30 days vs. <= 30 days) and aimed to develop a prediction model for this binary outcome. According to Figure 4, the boosted tree model has the smallest mean and median RMSE, so we selected it as the best model to predict the binary value of time to recovery.
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("secondary_analysis_plot/resample.png")
