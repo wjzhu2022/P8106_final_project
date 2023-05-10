@@ -383,7 +383,7 @@ myPar <- list(superpose.symbol = list(col = myCol),
 plot(svmr_fit, highlight = TRUE, par.settings = myPar)
 test_pred_svm=predict(svmr_fit, newdata = dat[-train_index,])
 
-test_error_svm=mean((test_pred_svm - dat$recovery_time[-train_index])^2)
+test_error_svm=sqrt(mean((test_pred_svm - dat$recovery_time[-train_index])^2))
 ```
 
 
