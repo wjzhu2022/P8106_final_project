@@ -362,7 +362,7 @@ resamp <- resamples(list(LM = linear,
                          BOOSTING = gbm_fit,
                          SVM = svmr_fit))
 summary(resamp)
-bwplot(resamp, metric = "RMSE")
+bwplot(resamp, metric = "ROC")
 ```
 
 
