@@ -122,8 +122,7 @@ boxplot(recovery_time~smoking, data=dat, xlab="smoking", ylim=c(0,150))
 set.seed(2023)
 ctrl = trainControl(method = "repeatedcv", number = 10, repeats = 5, savePredictions = TRUE)
 linear = train(recovery_time ~ age + gender + race + smoking + height + 
-                        weight + bmi + hypertension + diabetes + sbp + ldl + 
-                        vaccine + severity + study, 
+                        weight + bmi + hypertension + diabetes + sbp + ldl + vaccine + severity + study, 
                data = train_dat, 
                method = "lm", 
                trControl = ctrl)
@@ -190,22 +189,6 @@ pcr.rmse = sqrt(mean((pcr.pred - y2)^2))
 pcr.rmse
 ```
 
-
-```{r}
-#pls
-set.seed(2023)
-pls=train(x1, y1,
-          method = "pls",
-          tuneGrid = data.frame(ncomp = 1:19), 
-          trControl = ctrl,
-          preProcess = c("center", "scale"))
-
-summary(pls$finalModel)
-test_pred_pls=predict(pls, newdata = x2)
-rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
-rmse_pls
-plot(pls)
-```
 
 ```{r}
 #mars
@@ -377,7 +360,7 @@ resamp <- resamples(list(LM = linear,
                          TREE = rpart_fit,
                          RF = rf_fit,
                          BOOSTING = gbm_fit,
-                         SVM=svmr_fit))
+                         SVM = svmr_fit))
 summary(resamp)
 bwplot(resamp, metric = "RMSE")
 ```
@@ -391,5 +374,4 @@ test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, pls.rmse, r
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 knitr::kable(test_rmse_df, "pipe")
-
 ```
