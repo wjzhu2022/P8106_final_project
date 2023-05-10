@@ -155,33 +155,15 @@ n.pred
 plot(lasso)
 ```
 
-```{r ridge}
-#ridge
-set.seed(2023)
-
-ridge = train(x1, y1,
-                 method = "glmnet",
-                 tuneGrid = expand.grid(alpha = 0,
-                                        lambda = exp(seq(-1, 6, length = 100))), 
-                 trControl = ctrl)
-summary(ridge$finalModel)
-plot(ridge, xTrans = log)
-
-ridge$bestTune$lambda
-coef(ridge$finalModel, ridge$bestTune$lambda)
-
-ridge.pred <- predict(ridge, newdata = x2) 
-ridge.rmse <- sqrt(mean((ridge.pred - y2)^2))
-ridge.rmse
-```
 
 ```{r}
 #elastic net
 set.seed(2023)
-elastic_net=train(x1, y1,
+elastic_net = train(x1, y1,
                   method = "glmnet",
                   tuneGrid = expand.grid(alpha = seq(0, 1, length = 21), 
-                                         lambda = exp(seq(10, -10, length = 50))),
+                                         lambda = exp(seq(10, -10, length
+                                                          = 50))),
                   trControl = ctrl)
 elastic_net$bestTune
 test_pred_elastic=predict(elastic_net, newdata = x2)
@@ -242,6 +224,7 @@ rmse_mars
 summary(mars)
 plot(mars)
 ```
+
 ```{r ridge}
 #ridge
 set.seed(2023)
