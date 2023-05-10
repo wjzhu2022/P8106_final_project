@@ -120,7 +120,7 @@ boxplot(recovery_time~smoking, data=dat, xlab="smoking", ylim=c(0,150))
 ```{r}
 #linear model
 set.seed(2023)
-ctrl=trainControl(method = "repeatedcv", number =10, repeats = 5)
+ctrl = trainControl(method = "repeatedcv", number = 10, repeats = 5, savePredictions = TRUE)
 linear = train(recovery_time ~ age + gender + race + smoking + height + 
                         weight + bmi + hypertension + diabetes + sbp + ldl + 
                         vaccine + severity + study, 
@@ -195,7 +195,7 @@ pcr.rmse
 set.seed(2023)
 pls=train(x1, y1,
           method = "pls",
-          tuneGrid = data.frame(ncomp = 1:20), 
+          tuneGrid = data.frame(ncomp = 1:19), 
           trControl = ctrl,
           preProcess = c("center", "scale"))
 
@@ -271,11 +271,13 @@ ggplot(rpart_fit,highlight = TRUE)
 test_pred_tree = predict(rpart_fit, newdata = dat[-train_index, ])
 rmse_tree = mean((test_pred_tree - dat$recovery_time[-train_index])**2)
 rmse_tree
+rpart.plot::rpart.plot(rpart_fit$finalModel)
+
 ```
 The cp value is `r rpart_fit$finalModel$tuneValue[[1]]`.
 
 ```{r}
-#rf
+#bagging
 library(parallel)
 # Calculate the number of cores
 num_cores <- detectCores() 
@@ -299,38 +301,93 @@ stopCluster(cl)
 registerDoSEQ()
 ```
 
-```{r}
-#svm
-library(parallel)
-# Calculate the number of cores
+```{r boosting}
+#boosting
+
 num_cores <- detectCores() 
-library(doParallel)
-# create the cluster for caret to use
-# CPU usage may go up to 100%
+
 cl <- makePSOCKcluster(num_cores)
 registerDoParallel(cl)
 set.seed(2023)
-radial_tune=tune.svm(recovery_time ~ .,
-                        data = dat[train_index,],
-                        kernel = "radial",
-                        cost = exp(seq(-1,4,len = 20)),
-                        gamma = exp(seq(-6,-2,len = 20)))
-plot(radial_tune, transform.y = log, transform.x = log,
-     color.palette = terrain.colors)
+gbm_grid = expand.grid(n.trees = c(1000,2000, 3000, 4000, 5000),
+                       interaction.depth = 1:5,
+                       shrinkage = c(0.001,0.003,0.005),
+                       n.minobsinnode = c(1, 10))
+gbm_fit = train(recovery_time ~ . , 
+                train_dat, 
+                method = "gbm",
+                tuneGrid = gbm_grid,
+                trControl = ctrl,
+                verbose = FALSE)
+gbm_fit$bestTune
 
-
-best_radial=radial_tune$best.model
-summary(best_radial)
-
-pred.radial=predict(best_radial,newdata=dat[-train_index,])
-confusionMatrix(data = pred.radial,reference=dat$recovery_time[-train_index])
+summary(gbm_fit$finalModel, las = 2, cBars = 19, cex.names = 0.6)
+pred_gbm = predict(gbm_fit, newdata = test_dat)
+rmse_gbm = RMSE(pred_gbm,dat$recovery_time[-train_index])
+rmse_gbm
 stopCluster(cl)
 registerDoSEQ()
 ```
 
+```{r svm}
+#svm
+cl <- makePSOCKcluster(num_cores)
+registerDoParallel(cl)
+
+set.seed(2023)
+
+
+svmr_grid <- expand.grid(C = exp(seq(-2,2,len=40)),
+                         sigma = exp(seq(-1,2,len=30)))
+
+svmr_fit <- train(recovery_time ~.,
+                  data = dat[train_index,],
+                  method = "svmRadialSigma",
+                  tuneGrid = svmr_grid,
+                  trControl = ctrl)
+
+stopCluster(cl)
+registerDoSEQ()
+
+```
+
+```{r}
+svmr_fit$bestTune
+svm_test_prediction <- predict(svmr_fit$finalModel, newdata = x2)
+myCol=rainbow(25)
+myPar <- list(superpose.symbol = list(col = myCol), 
+              superpose.line = list(col = myCol))
+plot(svmr_fit, highlight = TRUE, par.settings = myPar)
+test_pred_svm=predict(svmr_fit, newdata = dat[-train_index,])
+
+test_error_svm=mean((test_pred_svm - dat$recovery_time[-train_index])^2)
+```
+
 ```{r}
 #model comparison
-set.seed(2023)
-res=resamples(list(lm = linear,lasso = lasso, elastic_net = elastic_net,pls = pls,gam=gam,mars = mars,boosting=gbm_fit,rf=rf_fit))
-summary(res)
+resamp <- resamples(list(LM = linear,
+                         RIDGE = ridge,
+                         LASSO = lasso,
+                         ENET = elastic_net,
+                         PCR = pcr.fit,
+                         GAM = gam,
+                         MARS = mars,
+                         TREE = rpart_fit,
+                         RF = rf_fit,
+                         BOOSTING = gbm_fit,
+                         SVM=svmr_fit))
+summary(resamp)
+bwplot(resamp, metric = "RMSE")
+```
+
+
+
+
+```{r}
+model <- c("LM","RIDGE","LASSO","ENET","PCR","GAM","MARS","TREE","RF","BOOSTING","SVM")
+test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, pls.rmse, rmse_gam, rmse_mars, rmse_tree, rmse_rf, rmse_gbm,test_error_svm)
+test_rmse_df <- cbind(model, test_rmse)
+test_rmse_df <- as.data.frame(test_rmse_df)
+knitr::kable(test_rmse_df, "pipe")
+
 ```
