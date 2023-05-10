@@ -190,17 +190,17 @@ plot(elastic_net)
 ```{r pls}
 #pls
 set.seed(2023)
-pls=train(x1, y1,
-          method = "pls",
-          tuneGrid = data.frame(ncomp = 1:20), 
-          trControl = ctrl,
-          preProcess = c("center", "scale"))
+pls.fit <- train(x1, y1,
+                 method = "pls",
+                 tuneGrid = data.frame(ncomp = 1:19),
+                 trControl = ctrl,
+                 preProcess = c("center","scale"))
+summary(pls.fit$finalModel)
+ggplot(pls.fit, highlight = TRUE) + theme_bw()
 
-summary(pls$finalModel)
-test_pred_pls=predict(pls, newdata = x2)
-rmse_pls=sqrt(mean((test_pred_pls - test_dat$recovery_time)**2))
-rmse_pls
-plot(pls)
+pls.pred = predict(pls.fit, newdata = x2)
+pls.rmse = sqrt(mean((pls.pred - y2)^2))
+pls.rmse
 ```
 
 ```{r pcr}
