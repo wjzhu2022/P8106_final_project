@@ -127,16 +127,15 @@ Additionally, the RMSE of each model was computed by comparing predicted and act
 
 ## Primary Analysis
 
-Among all the eleven models, according to Figure 3, Boosting, MARS and Bagging (Random Forest) have smaller RMSE than other models. 
+Among all the eleven models, according to Figure 3 and Table 1, the boosting model have the smallest mean and median RMSE, so it was the final model selected with the best performance in the primary analysis. Thus,  the final model to predict the recovery time from COVID-19 was the GAM model.
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("primary_analysis_plot/resample_plot.png")
 ```
 \begin{center}
-Figure 3. Distribution of RMSE of the eleven models 
+Figure 3. the Distribution of RMSE of the eleven models 
 \end{center}
 
-On the other hand, we predicted the outcome with the test data by the eleven models. According to Table 1, we found that Boosting, MARS and GAM have the greatest performance of predicting the values of outcome.
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("primary_analysis_plot/test_rmse.png")
@@ -145,7 +144,6 @@ knitr::include_graphics("primary_analysis_plot/test_rmse.png")
 Table 1. RMSE of the eleven models for prediction 
 \end{center}
 
-Therefore, we selected Boosting as the best model to predict time to recovery.
 
 ## Secondary Analysis
 
