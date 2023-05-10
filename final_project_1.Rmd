@@ -369,8 +369,14 @@ plot(radial_tune, transform.y = log, transform.x = log,
 
 best_radial = radial_tune$best.model
 summary(best_radial)
-pred.radial = predict(best_radial,newdata = dat[-train_index,])
-confusionMatrix(data = pred.radial,reference = dat$recovery_time[-train_index])
+#train error rate
+confusionMatrix(data = best_radial$fitted,
+                reference = y1)
+# test error rate
+pred.radial <- predict(best_radial, 
+                       newdata = testData)
+confusionMatrix(data = pred.radial, 
+                reference = y2)
 
 stopCluster(cl)
 registerDoSEQ()
