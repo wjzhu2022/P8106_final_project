@@ -43,6 +43,7 @@ library(kernlab)
 library(factoextra)
 library(e1071)
 library(vip)
+set.seed(2023)
 ```
 
 

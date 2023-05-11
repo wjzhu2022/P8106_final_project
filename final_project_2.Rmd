@@ -32,6 +32,7 @@ library(tidyverse)
 library(ggplot2)
 library(ggridges)
 library(vip)
+set.seed(2023)
 ```
 
 ### Data preparation
@@ -399,14 +400,14 @@ knitr::kable(test_rmse_df, "pipe")
 ```
 
 ```{r vip}
-predicted = predict(svmr_fit, newdata=test_data)
-mean(test_data$recovery_t==predicted)
+# predicted = predict(svmr_fit, newdata=test_data)
+# mean(test_data$recovery_t==predicted)
 
 vip(
   svmr_fit,
   method = "permute",
   train = train_dat,
-  target = "recovery_t",
+  target = "recovery_time",
   metric = "RMSE",
   nsim = 10,
   pred_wrapper = predict,
@@ -415,3 +416,4 @@ vip(
   mapping = aes_string(fill = "Variable")
 )
 ```
+
