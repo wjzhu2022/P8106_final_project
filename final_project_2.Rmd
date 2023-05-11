@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, message = FALSE, warning = FALSE)
 library(plyr)
+library(dplyr)
 library(caret)
 library(FNN) 
 library(dplyr)
@@ -57,25 +58,27 @@ dat <- rbind.fill(dat1, dat2) %>%
     vaccine = factor(vaccine),
     severity = factor(severity),
     study = factor(study),
-    recovery_t = if_else(recovery_time <= 30, 't1','t2'), 
-    recovery_t = factor(recovery_t)
+    recovery_t = if_else(recovery_time <= 30, 't1','t2')
   ) 
 ```
 
 ```{r}
 #data partition
 set.seed(2023)
-train_index=createDataPartition(y = dat$recovery_t,
-                                p = 0.8,
-                                list = FALSE)
-#training data
-train_dat=dat[train_index,]
-x1 = model.matrix(recovery_t~., data=dat)[train_index,-1]
-y1=dat$recovery_t[train_index]
-#testing data
-test_dat=dat[-train_index,]
-x2=model.matrix(recovery_t~., data=dat)[-train_index,-1]
-y2=dat$recovery_t[-train_index]  
+data <- dat %>%
+  mutate(recovery_t = factor(recovery_t))
+levels(data$recovery_t) = c("t1", "t2")
+training_rows <- createDataPartition(data$recovery_t,
+                                     p = 0.8,
+                                     list = F)
+training_set <- data[training_rows,]
+train_x <- model.matrix(recovery_t~., data %>% 
+                          dplyr::select(-recovery_time))[training_rows,-1]
+train_y <- data$recovery_t[training_rows]
+test_set <- data[-training_rows,]
+test_x <- model.matrix(recovery_t~., data %>% 
+                         dplyr::select(-recovery_time))[-training_rows,-1]
+test_y <- data$recovery_t[-training_rows]
 ```
 
 ```{r warning=FALSE}
@@ -108,24 +111,54 @@ featurePlot(x = visualization[ ,1:6],
 
 ```{r}
 par(mfrow=c(2,2)) 
-boxplot(recovery_t~study, data=dat, xlab="study", ylim=c(0,150))
-boxplot(recovery_t~gender, data=dat, xlab="gender", ylim=c(0,150))
-boxplot(recovery_t~hypertension, data=dat, xlab="hypertension", ylim=c(0,150))
-boxplot(recovery_t~diabetes, data=dat, xlab="diabetes", ylim=c(0,150))
-boxplot(recovery_t~vaccine, data=dat, xlab="vaccine", ylim=c(0,150))
-boxplot(recovery_t~severity, data=dat, xlab="severity", ylim=c(0,150))
-boxplot(recovery_t~race, data=dat, xlab="race", ylim=c(0,150))
-boxplot(recovery_t~smoking, data=dat, xlab="smoking", ylim=c(0,150))
+boxplot(recovery_t~study, data=data, xlab="study", ylim=c(0,150))
+boxplot(recovery_t~gender, data=data, xlab="gender", ylim=c(0,150))
+boxplot(recovery_t~hypertension, data=data, xlab="hypertension", ylim=c(0,150))
+boxplot(recovery_t~diabetes, data=data, xlab="diabetes", ylim=c(0,150))
+boxplot(recovery_t~vaccine, data=data, xlab="vaccine", ylim=c(0,150))
+boxplot(recovery_t~severity, data=data, xlab="severity", ylim=c(0,150))
+boxplot(recovery_t~race, data=data, xlab="race", ylim=c(0,150))
+boxplot(recovery_t~smoking, data=data, xlab="smoking", ylim=c(0,150))
 
+```
+```{r tree warning=FALSE}
+ctrl.c <- trainControl(method = "cv", number = 10)
+set.seed(2)
+gbm_grid <- expand.grid(
+  n.trees = c(50, 100, 200, 500, 1000, 2000),
+  interaction.depth = 1:5,
+  shrinkage = c(0.005,0.01,0.015),
+  n.minobsinnode = c(1,5))
+library(doParallel)
+Mycluster = makeCluster(detectCores() - 2)
+registerDoParallel(Mycluster)
+boost_fit <- train(train_x,
+                   train_y,
+                   method = "gbm",
+                   tuneGrid = gbm_grid,
+                   trControl = ctrl.c,
+                   distribution = "adaboost",
+                   verbose = FALSE)
+stopCluster(Mycluster)
+registerDoSEQ()
+
+ggplot(boost_fit, highlight = TRUE)
+boost_fit$bestTune
+summary(boost_fit$finalModel,las = 2, cBars = 19, cex.names = 0.6)
+
+pred_gbm = predict(gbm_fit, newdata = test_data)
+rmse_gbm = RMSE(pred_gbm,dat$recovery_t[-train_index])
+rmse_gbm
 ```
 
 
-```{r}
+
+```{r raw tree}
 #tree
 set.seed(2023)
 ctrl = trainControl(method = "repeatedcv", number = 10, repeats = 5, savePredictions = TRUE)
 rpart_fit <- train(recovery_t ~., 
-                   data = train_dat, 
+                   data = train_x, 
                      method = "rpart",
                      tuneGrid = data.frame(cp = exp(seq(-6, -2, length = 50))),
                      trControl = ctrl)
