@@ -177,3 +177,158 @@ From the EDA above, we observed high correlation between bmi and recovery time, 
 # Conclusion
 
 To identify important risk factors for longer recovery time and gain a better understanding of the predictors of recovery time from COVID-19, we compared eleven models both for regression and classification respectively with a dataset of 3595 observations and 14 predictors. Among them, the boosted tree models show the greatest performance on predicting time to recovery from COVID-19, with RMSE 18.99 for regression and R-Squared 70.81% for classification.
+
+\newpage
+
+# Appendix
+
+## Tables and figures for regression
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/linear_plots.png")
+```
+\begin{center}
+Appendix I. Linear model
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/lasso_plot.png")
+```
+\begin{center}
+Appendix II. Lasso
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/ridge_plot.png")
+```
+\begin{center}
+Appendix III. Ridge
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/elastic_net_plot.png")
+```
+\begin{center}
+Appendix IV. Elastic net
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/pcr_plot.png")
+```
+\begin{center}
+Appendix V. PCR
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/mars_plot.png")
+```
+\begin{center}
+Appendix VI. MARS
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/gam_plot.png")
+```
+\begin{center}
+Appendix VII. GAM
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/tree_plot_2.png")
+```
+\begin{center}
+Appendix VIII. Regression tree
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/rf_plot.png")
+```
+\begin{center}
+Appendix VIIII. Bagging
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/boosting_plot.png")
+```
+\begin{center}
+Appendix X. Boosted tree model
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("primary_analysis_plot/svm_plot.png")
+```
+\begin{center}
+Appendix XI. SVM
+\end{center}
+
+## Tables and figures for classification
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/linear.png")
+```
+\begin{center}
+Appendix XII. Linear model
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/lasso.png")
+```
+\begin{center}
+Appendix XIII. Lasso
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/elastic_net.png")
+```
+\begin{center}
+Appendix XIIII. Elastic net
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/pcr.png")
+```
+\begin{center}
+Appendix XV. PCR
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/mars.png")
+```
+\begin{center}
+Appendix XVI. MARS
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/ridge.png")
+```
+\begin{center}
+Appendix XVII. Ridge
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/gam.png")
+```
+\begin{center}
+Appendix XVIII. GAM
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/rf.png")
+```
+\begin{center}
+Appendix XVIIII. Bagging
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/boosting.png")
+```
+\begin{center}
+Appendix XX. Boosting
+\end{center}
+
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/smv.png")
+```
+\begin{center}
+Appendix XXI. SVM
+\end{center}
