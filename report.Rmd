@@ -151,7 +151,7 @@ knitr::include_graphics("primary_analysis_plot/variable_selection.png")
 Figure 4. the Variable Importance Plot (regression)
 \end{center}
 
-As for classification, shown in Figure 5, the boosted tree model has the smallest mean and median RMSE, so we selected it as the best model, same as regression, to predict the binary value of time to recovery from COVID-19. And to estimate the performance of the final model, we plotted the ROC curve, shown in Figure 6. The prediction Accuracy for classification is xxxx%, which means that the correct predictions will consist of xxxx% of all predictions on average. And the most important variable in the final model for classification is …….
+As for classification, shown in Figure 5, the boosted tree model has the smallest mean and median RMSE, so we selected it as the best model, same as regression, to predict the binary value of time to recovery from COVID-19. We also estimated the performance of the final model with the test data. Shown in Figure 6, the R-Squared of the boosted tree model is 70.81%, revealing that around 70% of the variability observed in the outcome is explained by this model. And the most important variable in the final model for classification is …….
 
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
@@ -161,7 +161,19 @@ knitr::include_graphics("secondary_analysis_plot/resample.png")
 Figure 5. Distribution of RMSE of the eleven models (classification)
 \end{center}
 
+```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
+knitr::include_graphics("secondary_analysis_plot/accuracy.png")
+```
+\begin{center}
+Figure 6. Prediction accuracy of the eleven models (classification)
+\end{center}
+
+
+# Discussion
+
+From the EDA above, we observed high correlation between bmi and recovery time, which supports our finding in primary analysis that bmi is a significant variable to predict recovery time in the final model. However, study type, as the second most important predictor of the final model, has no significant correlation with recovery time in EDA. We presumed that there might be interaction among study and some other variables, which requires further research and analysis in the future. 
+
 
 # Conclusion
 
-To identify important risk factors for longer recovery time and gain a better understanding of the predictors of recovery time from COVID-19, we developed prediction models with a variety of techniques. Among them, the boosted tree model shows the greatest performance on predicting time to recovery from COVID-19. 
+To identify important risk factors for longer recovery time and gain a better understanding of the predictors of recovery time from COVID-19, we compared eleven models both for regression and classification respectively with a dataset of 3595 observations and 14 predictors. Among them, the boosted tree models show the greatest performance on predicting time to recovery from COVID-19, with RMSE 18.99 for regression and R-Squared 70.81% for classification.
