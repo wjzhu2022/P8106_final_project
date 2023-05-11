@@ -167,7 +167,7 @@ knitr::include_graphics("secondary_analysis_plot/accuracy.JPG")
 \begin{center}
 Figure 6. Prediction accuracy of the eleven models (classification)
 \end{center}
-From Figure 6, the boosted tree model have the largest R squared value, so it should be chosen as the final model with the best performance. 
+Theoretically, the regression model can still fit binary data, but it will produce wrong fitting results. To illustrate this point, in Figure.6 we compare the accuracy of the classification model with the regression models used in the primary analysis. The results show that Boosting, RF, TREE, GAM and MARS have higher accuracy, indicating a better fit. Besides, according to Figure.6, the boosted tree model have the largest R squared value, so it should be chosen as the final model with the best performance. 
 
 # Discussion
 
