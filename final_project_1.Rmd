@@ -505,7 +505,7 @@ boxplot(recovery_t~race, data=data, xlab="race", ylim=c(0,150))
 boxplot(recovery_t~smoking, data=data, xlab="smoking", ylim=c(0,150))
 ```
 
-```{r Random Forest with boosting warning=FALSE}
+```{r Random Forest with boosting}
 set.seed(2023)
 ctrl.c <- trainControl(method = "cv", number = 10)
 set.seed(2)
