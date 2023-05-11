@@ -29,6 +29,8 @@ library(mgcv)
 library(party)
 library(doBy) 
 library(tidyverse)
+library(ggplot2)
+library(ggridges)
 ```
 
 ### Data preparation
@@ -254,7 +256,7 @@ rpart_fit$bestTune
 ggplot(rpart_fit,highlight = TRUE)
 
 test_pred_tree = predict(rpart_fit, newdata = dat[-train_index, ])
-rmse_tree = mean((test_pred_tree - dat$recovery_time[-train_index])**2)
+rmse_tree = sqrt(mean((test_pred_tree - dat$recovery_time[-train_index])**2))
 rmse_tree
 rpart.plot::rpart.plot(rpart_fit$finalModel)
 
@@ -282,6 +284,8 @@ rf_fit=train(recovery_time ~.,
                 trControl = ctrl)
 rf_fit$bestTune
 ggplot(rf_fit,highlight=TRUE)
+pred_tree = predict(rf_fit, newdata = test_dat)
+rmse_tree = RMSE(pred_tree,dat$recovery_time[-train_index])
 stopCluster(cl)
 registerDoSEQ()
 ```
@@ -345,13 +349,16 @@ myPar <- list(superpose.symbol = list(col = myCol),
 plot(svmr_fit, highlight = TRUE, par.settings = myPar)
 test_pred_svm=predict(svmr_fit, newdata = dat[-train_index,])
 
-test_error_svm=mean((test_pred_svm - dat$recovery_time[-train_index])^2)
+test_error_svm=sqrt(mean((test_pred_svm - dat$recovery_time[-train_index])^2))
 ```
 
 ```{r}
 #model comparison
+env <- foreach:::.foreachGlobals
+rm(list=ls(name=env), pos=env)
+
 resamp <- resamples(list(LM = linear,
-                         RIDGE = ridge,
+                         RIDGE = ridge.fit,
                          LASSO = lasso,
                          ENET = elastic_net,
                          PCR = pcr.fit,
@@ -362,14 +369,31 @@ resamp <- resamples(list(LM = linear,
                          BOOSTING = gbm_fit,
                          SVM = svmr_fit))
 summary(resamp)
-bwplot(resamp, metric = "ROC")
+#bwplot(resamp, metric = "ROC")
+
+model_rank =
+  resamp$values %>%
+  dplyr::select(ends_with("Rsquared")) %>%
+  pivot_longer('LM~Rsquared':'SVM~Rsquared',names_to = "model", values_to = "Rsquared",names_pattern = "(.*)~Rsquared") %>%
+  group_by(model) %>%
+  summarize(Rsquared_mean=mean(Rsquared),Rsquared_sd = sd(Rsquared)) %>%
+  arrange(Rsquared_mean) 
+model_rank
+model_rank=pull(model_rank,model)
+resamp$values %>%
+  dplyr::select(ends_with("Rsquared")) %>%
+  pivot_longer('LM~Rsquared':'SVM~Rsquared',names_to = "model", values_to = "Rsquared",names_pattern = "(.*)~Rsquared") %>%
+  mutate(model=factor(model,levels=model_rank)) %>%
+  ggplot() +
+  geom_density_ridges(aes(x=Rsquared,y=model,color=model,fill=model),alpha=0.5)
+                         
 ```
 
 
 
 
 ```{r}
-model <- c("LM","RIDGE","LASSO","ENET","PCR","GAM","MARS","TREE","RF","BOOSTING","SVM")
+model <- c("linear_model","ridge","LASSO","elastic_net","PCR","GAM","MARS","ctree","bagging","boosting","SVM")
 test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, pls.rmse, rmse_gam, rmse_mars, rmse_tree, rmse_rf, rmse_gbm,test_error_svm)
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
