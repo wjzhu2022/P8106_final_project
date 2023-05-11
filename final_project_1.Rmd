@@ -435,6 +435,16 @@ vip(
 )
 ```
 
+```{r}
+ice.rf <- gbm_fit %>% 
+  partial(pred.var = "CRBI",
+          grid.resolution = 100,
+          ice = TRUE) %>% 
+  autoplot(train = train_set, 
+           alpha = .1,
+           center = TRUE) + 
+  ggtitle("ICE, Boosting")
+```
 
 ## Secondary analysis
 
@@ -569,11 +579,8 @@ stopCluster(cl)
 registerDoSEQ()
 ```
 
-
-
 ```{r}
 svmr_fit$bestTune
-svm_test_prediction <- predict(svmr_fit$finalModel, newdata = test_x)
 myCol = rainbow(25)
 myPar <- list(superpose.symbol = list(col = myCol), 
               superpose.line = list(col = myCol))
@@ -587,24 +594,18 @@ test_error_svm = sqrt(mean((test_pred_svm - test_y)^2))
 env <- foreach:::.foreachGlobals
 rm(list = ls(name = env), pos = env)
 
-resamp <- resamples(list(LM = linear,
-                         RIDGE = ridge.fit,
-                         LASSO = lasso,
-                         ENET = elastic_net,
-                         PCR = pcr.fit,
-                         GAM = gam,
-                         MARS = mars,
-                         TREE = rpart_fit,
-                         RF = rf_fit,
-                         BOOSTING = gbm_fit,
-                         SVM = svmr_fit))
+resamp <- resamples(list(
+  TREE = rpart_fit,
+  RF = boost_fit,
+  SVM = svmr_fit)
+  )
 summary(resamp)
-#bwplot(resamp, metric = "ROC")
+bwplot(resamp)
 
 model_rank =
   resamp$values %>%
   dplyr::select(ends_with("Rsquared")) %>%
-  pivot_longer('LM~Rsquared':'SVM~Rsquared',names_to = "model", values_to = "Rsquared",names_pattern = "(.*)~Rsquared") %>%
+  pivot_longer('TREE~Rsquared':'SVM~Rsquared',names_to = "model", values_to = "Rsquared",names_pattern = "(.*)~Rsquared") %>%
   group_by(model) %>%
   summarize(Rsquared_mean=mean(Rsquared),Rsquared_sd = sd(Rsquared)) %>%
   arrange(Rsquared_mean) 
@@ -612,17 +613,16 @@ model_rank
 model_rank=pull(model_rank,model)
 resamp$values %>%
   dplyr::select(ends_with("Rsquared")) %>%
-  pivot_longer('LM~Rsquared':'SVM~Rsquared',names_to = "model", values_to = "Rsquared",names_pattern = "(.*)~Rsquared") %>%
+  pivot_longer('TREE~Rsquared':'SVM~Rsquared',names_to = "model", values_to = "Rsquared",names_pattern = "(.*)~Rsquared") %>%
   mutate(model=factor(model,levels=model_rank)) %>%
   ggplot() +
   geom_density_ridges(aes(x=Rsquared,y=model,color=model,fill=model),alpha=0.5)
-                         
 ```
 
 
 ```{r}
-model <- c("linear_model","ridge","LASSO","elastic_net","PCR","GAM","MARS","ctree","bagging","boosting","SVM")
-test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, rmse_gam, rmse_mars, rmse_tree, rmse_tree, rmse_gbm,test_error_svm)
+model <- c("TREE","RF","SVM")
+test_rmse <- c(rmse_tree, rmse_gbm,test_error_svm)
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 knitr::kable(test_rmse_df, "pipe")
@@ -631,7 +631,6 @@ knitr::kable(test_rmse_df, "pipe")
 ```{r vip}
 # predicted = predict(svmr_fit, newdata=test_data)
 # mean(test_data$recovery_t==predicted)
-
 vip(
   svmr_fit,
   method = "permute",
@@ -646,4 +645,13 @@ vip(
 )
 ```
 
-
+```{r}
+ice2.rf <- boost_fit %>% 
+  partial(pred.var = "CRBI",
+          grid.resolution = 100,
+          ice = TRUE) %>% 
+  autoplot(train = train_set, 
+           alpha = .1,
+           center = TRUE) + 
+  ggtitle("ICE, Boosting")
+```
