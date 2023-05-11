@@ -120,14 +120,12 @@ boxplot(recovery_t~smoking, data=dat, xlab="smoking", ylim=c(0,150))
 ```
 
 
-
-
-
-
 ```{r}
 #tree
 set.seed(2023)
-rpart_fit <- train(recovery_t ~., data = dat[train_index,], 
+ctrl = trainControl(method = "repeatedcv", number = 10, repeats = 5, savePredictions = TRUE)
+rpart_fit <- train(recovery_t ~., 
+                   data = train_dat, 
                      method = "rpart",
                      tuneGrid = data.frame(cp = exp(seq(-6, -2, length = 50))),
                      trControl = ctrl)
@@ -157,7 +155,7 @@ rf_grid=expand.grid(mtry = 1:16,
                        min.node.size = 1:6)
 set.seed(2023)
 rf_fit=train(recovery_t ~., 
-                data = dat[train_index,],
+                data = train_dat,
                 method = "ranger",
                 tuneGrid = rf_grid,
                 trControl = ctrl)
@@ -209,7 +207,7 @@ svmr_grid <- expand.grid(C = exp(seq(-2,2,len=40)),
                          sigma = exp(seq(-1,2,len=30)))
 
 svmr_fit <- train(recovery_t ~.,
-                  data = dat[train_index,],
+                  data = train_dat,
                   method = "svmRadialSigma",
                   tuneGrid = svmr_grid,
                   trControl = ctrl)
