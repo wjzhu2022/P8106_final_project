@@ -31,6 +31,7 @@ library(doBy)
 library(tidyverse)
 library(ggplot2)
 library(ggridges)
+library(vip)
 ```
 
 ### Data preparation
@@ -66,8 +67,6 @@ set.seed(2023)
 train_index=createDataPartition(y = dat$recovery_time,
                                 p = 0.8,
                                 list = FALSE)
-train_dat=dat[train_index,]
-test_dat=dat[-train_index,]
 #training data
 train_data=dat[train_index,]
 x1 = model.matrix(recovery_time~., data=dat)[train_index,-1]
@@ -391,11 +390,28 @@ resamp$values %>%
 
 
 
-
 ```{r}
 model <- c("linear_model","ridge","LASSO","elastic_net","PCR","GAM","MARS","ctree","bagging","boosting","SVM")
-test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, pls.rmse, rmse_gam, rmse_mars, rmse_tree, rmse_rf, rmse_gbm,test_error_svm)
+test_rmse <- c(lm.rmse, ridge.rmse, rmse_lasso, enet.rmse, pcr.rmse, rmse_gam, rmse_mars, rmse_tree, rmse_tree, rmse_gbm,test_error_svm)
 test_rmse_df <- cbind(model, test_rmse)
 test_rmse_df <- as.data.frame(test_rmse_df)
 knitr::kable(test_rmse_df, "pipe")
+```
+
+```{r vip}
+predicted = predict(svmr_fit, newdata=test_data)
+mean(test_data$recovery_t==predicted)
+
+vip(
+  svmr_fit,
+  method = "permute",
+  train = train_dat,
+  target = "recovery_t",
+  metric = "RMSE",
+  nsim = 10,
+  pred_wrapper = predict,
+  geom = "boxplot",
+  all_permutations = TRUE,
+  mapping = aes_string(fill = "Variable")
+)
 ```
