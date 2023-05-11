@@ -136,14 +136,14 @@ knitr::include_graphics("primary_analysis_plot/resample_plot.png")
 \begin{center}
 Figure 3. the Distribution of RMSE of the eleven models (regression)
 \end{center}
-
+From Figure 3, the boosted tree model have the smallest RMSE. 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("primary_analysis_plot/test_rmse.png")
 ```
 \begin{center}
 Table 1. RMSE of the eleven models for prediction (regression)
 \end{center}
-
+From Table 1, the boosted tree model had the smallest RMSE which is about 18.988.
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
 knitr::include_graphics("primary_analysis_plot/variable_selection.png")
 ```
@@ -151,7 +151,7 @@ knitr::include_graphics("primary_analysis_plot/variable_selection.png")
 Figure 4. the Variable Importance Plot (regression)
 \end{center}
 
-As for classification, shown in Figure 5, the boosted tree model has the smallest mean and median RMSE, so we selected it as the best model, same as regression, to predict the binary value of time to recovery from COVID-19. We also estimated the performance of the final model with the test data. Shown in Figure 6, the R-Squared of the boosted tree model is 70.81%, revealing that around 70% of the variability observed in the outcome is explained by this model. And the most important variable in the final model for classification is …….
+As for classification, shown in Figure 5, the boosted tree model has the smallest mean and median RMSE, so we selected it as the best model, same as regression, to predict the binary value of time to recovery from COVID-19. We also estimated the performance of the final model with the test data. Shown in Figure 6, the R-Squared of the boosted tree model is 70.81%, revealing that around 70% of the variability observed in the outcome is explained by this model. And the most important variable in the final model for classification is bmi.
 
 
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
@@ -160,14 +160,14 @@ knitr::include_graphics("secondary_analysis_plot/resample.png")
 \begin{center}
 Figure 5. Distribution of RMSE of the eleven models (classification)
 \end{center}
-
+From Figure 5, the boosted tree model had the smallest RMSE, so it should be selected as the final model with the best performance.
 ```{r,echo=FALSE,out.width='90%',out.height='70%',fig.align='center'}
-knitr::include_graphics("secondary_analysis_plot/accuracy.png")
+knitr::include_graphics("secondary_analysis_plot/accuracy.JPG")
 ```
 \begin{center}
 Figure 6. Prediction accuracy of the eleven models (classification)
 \end{center}
-
+From Figure 6, the boosted tree model have the largest R squared value, so it should be chosen as the final model with the best performance. 
 
 # Discussion
 
