@@ -573,20 +573,19 @@ registerDoSEQ()
 
 ```{r}
 svmr_fit$bestTune
-svm_test_prediction <- predict(svmr_fit$finalModel, newdata = x2)
-myCol=rainbow(25)
+svm_test_prediction <- predict(svmr_fit$finalModel, newdata = test_x)
+myCol = rainbow(25)
 myPar <- list(superpose.symbol = list(col = myCol), 
               superpose.line = list(col = myCol))
 plot(svmr_fit, highlight = TRUE, par.settings = myPar)
-test_pred_svm=predict(svmr_fit, newdata = dat[-train_index,])
-
-test_error_svm=sqrt(mean((test_pred_svm - dat$recovery_time[-train_index])^2))
+test_pred_svm = predict(svmr_fit, newdata = test_set)
+test_error_svm = sqrt(mean((test_pred_svm - test_y)^2))
 ```
 
 ```{r}
 #model comparison
 env <- foreach:::.foreachGlobals
-rm(list=ls(name=env), pos=env)
+rm(list = ls(name = env), pos = env)
 
 resamp <- resamples(list(LM = linear,
                          RIDGE = ridge.fit,
@@ -619,7 +618,6 @@ resamp$values %>%
   geom_density_ridges(aes(x=Rsquared,y=model,color=model,fill=model),alpha=0.5)
                          
 ```
-
 
 
 ```{r}
